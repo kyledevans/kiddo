@@ -1,0 +1,67 @@
+2. Add test data procedures to the background service.
+    a. Simple example to showcase the SerialDispatchService and to create accounts, users, and currencies.  Entries records are not generated here.
+    b. Some amount of configurability would be nice (IE: number of accounts to create, number of currencies, etc.).
+
+3. Add simulation functionality to the background service.
+    a. This should work with existing accounts and users and then start generating Entry records.
+    b. It should ideally generate records that appear to have been created over a long period of use.  So for example it should spread out the number of entries per account so that their timestamps appear with a frequency of a handful a day.
+    c. The timeframe will probably need to be configurable (IE: Generate Entry records for the last 2 months).
+    d. Perhaps also have a mode that creates "ongoing" test data.  So that we can observe the system as it would appear if there were actively people using it.
+
+4. Create simple observability dashboards in grafana.
+    a. Already have generic app metrics.
+    b. Need things that are more domain-specific.  Such as the number of Entry records per hour.  Usage trends, etc.
+
+8. Scope accounts to users.
+    a. Users can share accounts between each other.
+
+10. Host fonts and icons locally.
+    * Fluent UI pulls the various fonts and icons from a CDN on the internet.
+    * In order to provide a better experience for web applications that are self-hosted on a local network (particularly corporate networks with all of their quirks).
+    * This bug report has some useful information: https://github.com/microsoft/fluentui/issues/10363
+
+11. Angular version
+    * Create the full UI in Angular.
+    * Probably end up using Material UI for that.
+
+12. Vue version?
+    * Never tried vue, but it's reasonably popular.
+    * Maybe use Bootstrap for this one.
+
+12. Bug: After about an hour, the tokens seem to expire.  Fix that.
+    * Not sure exactly the timeframe.
+    * Seems to happen even on pages that continuously poll for data.
+
+13. Bug: Text input fields that force all-caps do not support the browser's "Undo/Redo" stack.
+    * Probably has to do with the fact that on change event handlers re-write the content to all caps.
+    * This will probably require interfacing with some browser API to manually push changes onto the undo/redo stack.
+
+15. Virtual scroll support
+    * Accounts management list
+    * Currency lookups screen
+    * Users admin list
+
+16. Make Program.cs files more...modular?
+    * For example a lot of the DI configuration could be moved into separate extension methods that are located closer to whatever feature is being configured.
+        - For example the code that adds all of the Kiddo.Web.Models could be relocated into an extension method within the Models directory.
+    * 3rd party configurations such as application metrics would ideally be located elsewhere.  This would allow for easier feature cherry picking for new applications based on this template.
+        - Some amount of code for logging initialization is required to appear in the Program.cs file.
+
+17. Add OAuth Redis token cache support.
+
+18. Grafana Loki sink support.
+    * Personally I don't like Loki as much as Seq, but the free version doesn't have any restrictions on the number of users for the system.
+
+19. Tab URL navigation
+    * For screens that have tab UI's, they should utilize the browser's URL hash to provide direct navigation.
+
+20. SPA logging
+
+21. Progressive Web App
+
+22. Schema migration from the application
+    * This should ideally be implemented as a task for the background service.
+    * It will run on the SerialDispatchService.
+    * All it will do is apply any missing database migrations.
+    * Be nice to have a button to run this from the UI.
+    * Or to automatically run it when the background service starts (won't be able to run this from the SerialDispatchService).

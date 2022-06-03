@@ -1,0 +1,54 @@
+@import "/node_modules/reset-css/sass/reset";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+}
+
+#root {
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  overflow: hidden;
+}
+
+// When a panel is instantiated, Fluent UI instantiates this element within the DOM where it is defined as a placeholder.  We set
+// the display to none so that it doesn't interfere with the CSS grid.  It's an empty placeholder, so there's no harm.  Not really
+// sure why it's created in the first place.
+.ms-layer {
+  display: none;
+}
+
+// This forces the Fluent UI text boxes to retain enough space for an error message without reflowing the page.
+.ms-TextField {
+  height: 73px;
+  &.ms-TextField--underlined {
+    height: 56px;
+  }
+}
+
+.ms-Callout-main {
+  overflow: visible;
+
+  .ms-Tooltip-content {
+    overflow: visible;
+  }
+}
+
+/*#layer-host {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  //z-index: 1000;
+
+  .ms-Panel-main {
+    z-index: 1000;
+  }
+}*/

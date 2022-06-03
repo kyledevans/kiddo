@@ -1,0 +1,6 @@
+{
+  // This file is only here to help with Visual Studio IntelliSense.  Without it IntelliSense will use an incompatible builtin tsconfig when viewing
+  // files that are not actively being referenced by the react project.  This really only impacts things like files that are temporarily not referenced.
+  // This file is not seen or referenced in any way by the react compiler - it's entirely asthetic.
+  "extends": "./ClientApp/tsconfig.json"
+}

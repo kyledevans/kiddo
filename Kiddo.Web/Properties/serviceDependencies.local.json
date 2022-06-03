@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "type": "secrets.user"
+    },
+    "identityapp.aad1": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": null,
+      "type": "identityapp.aad.callsgraph",
+      "connectionId": "AzureAD:ClientSecret"
+    },
+    "mssql1": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": null,
+      "type": "mssql.onprem",
+      "connectionId": "ConnectionStrings:kiddo"
+    }
+  }
+}
