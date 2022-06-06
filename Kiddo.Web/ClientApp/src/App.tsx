@@ -25,6 +25,7 @@ const LookupsPage = lazy(() => import("./lookups-page/lookups-page"));
 const AdminUsersPage = lazy(() => import("./admin/users-page/users-page"));
 const AdminUsersEditPage = lazy(() => import("./admin/users-page/users-edit-page"));
 const ProfilePage = lazy(() => import("./profile-page/profile-page"));
+const LoginsPage = lazy(() => import("./profile-page/logins-page"));
 const PasswordLoginPage = lazy(() => import("./password-page/login-page"));
 const PasswordRegisterPage = lazy(() => import("./password-page/register-page"));
 const PasswordResetPage = lazy(() => import("./password-page/reset-page"));
@@ -248,6 +249,11 @@ function AppInner() {
           <Route path="/admin/users">
             <Suspense fallback={<></>}>
               <AdminUsersPage />
+            </Suspense>
+          </Route>
+          <Route path="/profile/logins">
+            <Suspense fallback={<></>}>
+              <LoginsPage />
             </Suspense>
           </Route>
           <Route path="/profile">

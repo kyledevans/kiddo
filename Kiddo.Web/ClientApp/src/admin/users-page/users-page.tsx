@@ -20,21 +20,6 @@ const pageStyles = mergeStyleSets({
     gridTemplateRows: "min-content 1fr",
     overflow: "hidden"
   },
-  toolbar: {
-    display: "grid",
-    gridTemplateColumns: "min-content 1fr min-content",
-    selectors: {
-      ".toolbar-left": {
-
-      },
-      ".toolbar-middle": {
-
-      },
-      ".toolbar-right": {
-        padding: "8px 16px 8px 0"
-      }
-    }
-  },
   btnNew: {
     paddingRight: 16
   },
