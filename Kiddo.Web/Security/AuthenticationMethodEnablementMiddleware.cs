@@ -1,13 +1,14 @@
 ﻿namespace Kiddo.Web.Security;
 
+using Kiddo.Web.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
 public class AuthenticationMethodEnablementMiddleware : IMiddleware
 {
-    IOptionsMonitor<Implementations.SpaOptions> SpaOptionsMonitor { get; set; }
+    IOptionsMonitor<SpaOptions> SpaOptionsMonitor { get; set; }
 
-    public AuthenticationMethodEnablementMiddleware(IOptionsMonitor<Implementations.SpaOptions> spaOptionsMonitor)
+    public AuthenticationMethodEnablementMiddleware(IOptionsMonitor<SpaOptions> spaOptionsMonitor)
     {
         SpaOptionsMonitor = spaOptionsMonitor;
     }
@@ -22,7 +23,7 @@ public class AuthenticationMethodEnablementMiddleware : IMiddleware
         }
         else
         {
-            Implementations.SpaOptions spaOptions = SpaOptionsMonitor.CurrentValue;
+            SpaOptions spaOptions = SpaOptionsMonitor.CurrentValue;
             foreach (AuthenticationMethodEnabledAttribute authMethodAttr in authMethodAttrs)
             {
                 if (!spaOptions.AuthMethods.Contains(authMethodAttr.AuthenticationMethod))

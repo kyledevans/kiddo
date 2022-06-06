@@ -1,9 +1,9 @@
-﻿namespace Kiddo.Web.Implementations;
+﻿namespace Kiddo.Web.Security;
 
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
-public class CurrentUserProvider : Abstractions.ICurrentUserProvider
+public class CurrentUserProvider : ICurrentUserProvider
 {
     private IHttpContextAccessor ContextAccessor { get; set; }
     private IAuthorizationService AuthorizationService { get; set; }
@@ -38,7 +38,7 @@ public class CurrentUserProvider : Abstractions.ICurrentUserProvider
 
         if (ContextAccessor.HttpContext.User.Identity.IsAuthenticated)
         {
-            if ((await AuthorizationService.AuthorizeAsync(ContextAccessor.HttpContext.User, Security.SecurityConstants.Policy.AzureAd).ConfigureAwait(false)).Succeeded)
+            if ((await AuthorizationService.AuthorizeAsync(ContextAccessor.HttpContext.User, SecurityConstants.Policy.AzureAd).ConfigureAwait(false)).Succeeded)
             {
                 Claim? userIdClaim = ContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
                 if (userIdClaim == null) throw new Exception($"Cannot determine the current user because the claim \"{ClaimTypes.NameIdentifier}\" could not be found.");
@@ -47,7 +47,7 @@ public class CurrentUserProvider : Abstractions.ICurrentUserProvider
                 CachedAzureIdentifier = userIdClaim.Value;
                 UserId = userId;
             }
-            else if ((await AuthorizationService.AuthorizeAsync(ContextAccessor.HttpContext.User, Security.SecurityConstants.Policy.AspNetIdentity).ConfigureAwait(false)).Succeeded)
+            else if ((await AuthorizationService.AuthorizeAsync(ContextAccessor.HttpContext.User, SecurityConstants.Policy.AspNetIdentity).ConfigureAwait(false)).Succeeded)
             {
                 Claim? subjectClaim = ContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
                 if (subjectClaim != null)

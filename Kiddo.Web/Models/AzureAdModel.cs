@@ -14,14 +14,14 @@ public class AzureAdModel
     private DAL.UserDAL UserDB { get; set; }
     private IMapper Mapper { get; set; }
     private GraphServiceClient GraphClient { get; set; }
-    private Abstractions.ICurrentUserProvider CurrentUser { get; set; }
+    private ICurrentUserProvider CurrentUser { get; set; }
     private ILogger Logger { get; set; }
     private UserManager<Database.Models.User> UserManager { get; set; }
     private IUserRegistrationBehavior RegistrationBehavior { get; set; }
     private IManualGraphServiceClient ManualGraphClient { get; set; }
     private Validators Validators { get; set; }
 
-    public AzureAdModel(Validators validators, ILogger<ProfileModel> logger, IMapper mapper, UserManager<Database.Models.User> userManager, GraphServiceClient graphClient, DAL.KiddoDAL db, DAL.UserDAL userDB, Abstractions.ICurrentUserProvider currentUser, IUserRegistrationBehavior registrationBehavior, IManualGraphServiceClient manualGraphClient)
+    public AzureAdModel(Validators validators, ILogger<ProfileModel> logger, IMapper mapper, UserManager<Database.Models.User> userManager, GraphServiceClient graphClient, DAL.KiddoDAL db, DAL.UserDAL userDB, ICurrentUserProvider currentUser, IUserRegistrationBehavior registrationBehavior, IManualGraphServiceClient manualGraphClient)
     {
         Logger = logger;
         DB = db;

@@ -1,6 +1,7 @@
 ﻿namespace Kiddo.Web.Security;
 
 using Kiddo.Constants;
+using Kiddo.Web.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
@@ -14,9 +15,9 @@ public class UserRegistrationBehavior : IUserRegistrationBehavior
     private IAuthorizationService AuthorizationService { get; set; }
     private HttpContext CurrentHttpContext { get; set; }
     private bool IsRegistrationAllowed { get; set; }
-    private Implementations.SpaOptions SpaOptions { get; set; }
+    private SpaOptions SpaOptions { get; set; }
 
-    public UserRegistrationBehavior(DAL.UserDAL userDb, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor, IOptionsMonitor<Implementations.SpaOptions> spaOptionsMonitor)
+    public UserRegistrationBehavior(DAL.UserDAL userDb, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor, IOptionsMonitor<SpaOptions> spaOptionsMonitor)
     {
         UserDB = userDb;
         AuthorizationService = authorizationService;

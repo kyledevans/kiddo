@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph.ExternalConnectors;
 using Microsoft.Extensions.Configuration;
-using Kiddo.Web.Abstractions;
 using System.Security.Claims;
 using Microsoft.Identity.Client;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +19,7 @@ using System.Threading.Tasks;
 using Microsoft.Graph;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc;
+using Kiddo.Web.Configuration;
 
 public static class SecurityExtensionMethods
 {
@@ -41,7 +41,7 @@ public static class SecurityExtensionMethods
                 configuration.Bind(SecurityConstants.AspNetIdentity.PasswordOptions, options.Password);
                 options.User.RequireUniqueEmail = true; // Use email addresses as the username.
             })
-            .PostConfigure<IOptionsMonitor<Implementations.SpaOptions>>((options, spaOptionsMonitor) => {
+            .PostConfigure<IOptionsMonitor<SpaOptions>>((options, spaOptionsMonitor) => {
                 // This needs to be a post-configuration because we are actually pulling it from the SpaOptions section, and that needs a chance to bind first.
                 options.SignIn.RequireConfirmedEmail = spaOptionsMonitor.CurrentValue.IsEmailConfirmationRequired;
             });
@@ -98,7 +98,7 @@ public static class SecurityExtensionMethods
         services.AddScoped<IManualGraphServiceClient, ManualGraphServiceClient>();
 
         services.AddOptions<PolicySchemeOptions>(SecurityConstants.Scheme.Selector)
-            .Configure<IOptions<Implementations.SpaOptions>>((options, spaOptions) => {
+            .Configure<IOptions<SpaOptions>>((options, spaOptions) => {
                 options.ForwardDefaultSelector = context => {
                     context.Request.Headers.TryGetValue(HeaderNames.Authorization, out Microsoft.Extensions.Primitives.StringValues authHeader);
                     if (authHeader.Count == 0) return SecurityConstants.Scheme.AspNetIdentity;
@@ -112,7 +112,7 @@ public static class SecurityExtensionMethods
             });
 
         services.AddOptions<JwtBearerOptions>(SecurityConstants.Scheme.AspNetIdentity)
-            .Configure<JwtSigningKey, IOptions<Implementations.SpaOptions>>((options, signingKey, spaOptions) => {
+            .Configure<JwtSigningKey, IOptions<SpaOptions>>((options, signingKey, spaOptions) => {
                 options.TokenValidationParameters = new() {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = signingKey,
@@ -121,7 +121,7 @@ public static class SecurityExtensionMethods
                     ClockSkew = TimeSpan.Zero
                 };
             })
-            .PostConfigure<IOptions<Implementations.SpaOptions>>((options, spaOptions) => {
+            .PostConfigure<IOptions<SpaOptions>>((options, spaOptions) => {
                 // Effectively disable password authentication when appsettings.json is configured without support.
                 if (!spaOptions.Value.AuthMethods.Contains(WebContract.AuthenticationMethodType.Password))
                 {
@@ -132,7 +132,7 @@ public static class SecurityExtensionMethods
             });
 
         services.AddOptions<JwtBearerOptions>(SecurityConstants.Scheme.AzureAd)
-            .PostConfigure<IOptions<Implementations.SpaOptions>>((options, spaOptions) => {
+            .PostConfigure<IOptions<SpaOptions>>((options, spaOptions) => {
                 // Effectively disable AzureAd when appsettings.json is configured without support.
                 if (!spaOptions.Value.AuthMethods.Contains(WebContract.AuthenticationMethodType.AzureAd))
                 {

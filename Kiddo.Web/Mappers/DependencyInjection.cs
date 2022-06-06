@@ -1,4 +1,6 @@
-﻿namespace Kiddo.Web.Mappers;
+﻿using Kiddo.Web.Configuration;
+
+namespace Kiddo.Web.Mappers;
 
 public static class DependencyInjection
 {
@@ -21,7 +23,7 @@ public static class DependencyInjection
             config.CreateMap<Kiddo.Database.Models.Account, Kiddo.WebContract.Account.Account>();
             config.CreateMap<Kiddo.WebContract.Account.Account, Kiddo.Database.Models.Account>();
             config.CreateMap<Kiddo.Database.Models.Account, Kiddo.WebContract.Account.SearchAccountResult>();
-            config.CreateMap<Kiddo.Web.Implementations.SpaOptions, Kiddo.WebContract.App.SpaConfiguration>();
+            config.CreateMap<SpaOptions, Kiddo.WebContract.App.SpaConfiguration>();
             config.CreateMap<Kiddo.Database.Models.User, Kiddo.WebContract.Profile.Profile>().ForMember(e => e.UserId, op => op.MapFrom(source => source.Id)).ForMember(e => e.IsEmailConfirmed, op => op.MapFrom(source => source.EmailConfirmed));
             config.CreateMap<Kiddo.Database.Models.UserAzureAd, Kiddo.WebContract.AzureAd.AccountLink>();
             config.CreateMap<Microsoft.AspNetCore.Identity.PasswordOptions, Kiddo.WebContract.Identity.PasswordValidationRules>();

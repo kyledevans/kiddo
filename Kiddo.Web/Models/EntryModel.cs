@@ -1,15 +1,16 @@
 ﻿namespace Kiddo.Web.Models;
 
 using AutoMapper;
+using Kiddo.Web.Security;
 
 public class EntryModel
 {
     private DAL.KiddoDAL DB { get; set; }
     private DAL.EntryDAL EntryDB { get; set; }
     private IMapper Mapper { get; set; }
-    private Abstractions.ICurrentUserProvider CurrentUser { get; set; }
+    private ICurrentUserProvider CurrentUser { get; set; }
 
-    public EntryModel(DAL.KiddoDAL db, DAL.EntryDAL entryDB, IMapper mapper, Abstractions.ICurrentUserProvider currentUser)
+    public EntryModel(DAL.KiddoDAL db, DAL.EntryDAL entryDB, IMapper mapper, ICurrentUserProvider currentUser)
     {
         DB = db;
         EntryDB = entryDB;

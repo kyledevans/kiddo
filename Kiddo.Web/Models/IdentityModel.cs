@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Kiddo.Web.Security;
 using Kiddo.WebContract.Identity;
 using MimeKit;
+using Kiddo.Web.Configuration;
 
 public class IdentityModel
 {
@@ -14,16 +15,16 @@ public class IdentityModel
     private SignInManager<Database.Models.User> SignInManager { get; set; }
     private IMapper Mapper { get; set; }
     private Security.IJwtUtils JwtUtils { get; set; }
-    private Abstractions.ICurrentUserProvider CurrentUser { get; set; }
+    private ICurrentUserProvider CurrentUser { get; set; }
     private DAL.UserDAL UserDB { get; set; }
     private DAL.KiddoDAL DB { get; set; }
     private IOptionsMonitor<IdentityOptions> IdentityOptionsMonitor { get; set; }
     private IUserRegistrationBehavior RegistrationBehavior { get; set; }
     private IOptionsMonitor<SmtpOptions> SmtpOptions { get; set; }
-    private Implementations.SpaOptions SpaConfig { get; set; }
+    private SpaOptions SpaConfig { get; set; }
     private EmailSender EmailSender { get; set; }
 
-    public IdentityModel(DAL.KiddoDAL db, DAL.UserDAL userDB, UserManager<Database.Models.User> userManager, SignInManager<Database.Models.User> signInManager, IMapper mapper, Security.IJwtUtils jwtUtils, Abstractions.ICurrentUserProvider currentUser, IOptionsMonitor<IdentityOptions> identityOptionsMonitor, IUserRegistrationBehavior registrationBehavior, IOptionsMonitor<SmtpOptions> smtpOptions, IOptionsMonitor<Implementations.SpaOptions> spaConfigurationMonitor, EmailSender emailSender)
+    public IdentityModel(DAL.KiddoDAL db, DAL.UserDAL userDB, UserManager<Database.Models.User> userManager, SignInManager<Database.Models.User> signInManager, IMapper mapper, Security.IJwtUtils jwtUtils, ICurrentUserProvider currentUser, IOptionsMonitor<IdentityOptions> identityOptionsMonitor, IUserRegistrationBehavior registrationBehavior, IOptionsMonitor<SmtpOptions> smtpOptions, IOptionsMonitor<SpaOptions> spaConfigurationMonitor, EmailSender emailSender)
     {
         UserDB = userDB;
         UserManager = userManager;

@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Abstractions;
+﻿namespace Kiddo.Web.Security;
 
 public interface ICurrentUserProvider
 {

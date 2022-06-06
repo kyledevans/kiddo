@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Implementations;
+﻿namespace Kiddo.Web.Configuration;
 
 using Microsoft.Extensions.DependencyInjection;
 

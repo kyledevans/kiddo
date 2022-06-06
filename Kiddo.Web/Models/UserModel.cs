@@ -1,6 +1,7 @@
 ﻿namespace Kiddo.Web.Models;
 
 using AutoMapper;
+using Kiddo.Web.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,12 +10,12 @@ public class UserModel
     private DAL.KiddoDAL DB { get; set; }
     private DAL.UserDAL UserDB { get; set; }
     private IMapper Mapper { get; set; }
-    private Abstractions.ICurrentUserProvider CurrentUser { get; set; }
+    private ICurrentUserProvider CurrentUser { get; set; }
     private IAuthorizationService AuthorizationService { get; set; }
     private HttpContext HttpContext { get; set; }
     private UserManager<Database.Models.User> UserManager { get; set; }
 
-    public UserModel(DAL.KiddoDAL db, DAL.UserDAL userDB, UserManager<Database.Models.User> userManager, IMapper mapper, Abstractions.ICurrentUserProvider currentUser, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
+    public UserModel(DAL.KiddoDAL db, DAL.UserDAL userDB, UserManager<Database.Models.User> userManager, IMapper mapper, ICurrentUserProvider currentUser, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
     {
         DB = db;
         UserDB = userDB;

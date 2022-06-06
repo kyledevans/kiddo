@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Security;
+﻿namespace Kiddo.Web.Configuration;
 
 /// <summary>
 /// Configuration for the SPA client to support MSAL.

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
+using Kiddo.Web.Configuration;
 
 namespace Kiddo.Web.Security;
 
@@ -12,10 +13,10 @@ namespace Kiddo.Web.Security;
 /// </summary>
 public class SchemeEnabledJwtBearerHandler : JwtBearerHandler
 {
-    private IOptionsMonitor<Implementations.SpaOptions> SpaOptionsMonitor { get; set; }
+    private IOptionsMonitor<SpaOptions> SpaOptionsMonitor { get; set; }
     private bool IsAuthenticationMethodDisabledError { get; set; }
 
-    public SchemeEnabledJwtBearerHandler(IOptionsMonitor<Implementations.SpaOptions> spaOptionsMonitor, IOptionsMonitor<JwtBearerOptions> optionsMonitor, ILoggerFactory loggerFactory, UrlEncoder urlEncoder, ISystemClock systemClock) :
+    public SchemeEnabledJwtBearerHandler(IOptionsMonitor<SpaOptions> spaOptionsMonitor, IOptionsMonitor<JwtBearerOptions> optionsMonitor, ILoggerFactory loggerFactory, UrlEncoder urlEncoder, ISystemClock systemClock) :
         base(optionsMonitor, loggerFactory, urlEncoder, systemClock)
     {
         SpaOptionsMonitor = spaOptionsMonitor;
@@ -23,7 +24,7 @@ public class SchemeEnabledJwtBearerHandler : JwtBearerHandler
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        Implementations.SpaOptions spaOptions = SpaOptionsMonitor.CurrentValue;
+        SpaOptions spaOptions = SpaOptionsMonitor.CurrentValue;
 
         AuthenticateResult result;
         WebContract.AuthenticationMethodType? authMethod;

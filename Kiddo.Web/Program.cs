@@ -8,7 +8,6 @@ using App.Metrics.AspNetCore.Tracking;
 using App.Metrics.Reporting.InfluxDB;
 using Kiddo.DAL;
 using Kiddo.Clients.BackgroundServiceClient;
-using Kiddo.Web.Implementations;
 using Kiddo.Web.Security;
 using Kiddo.Web.Mappers;
 using Microsoft.AspNetCore.Authentication;
@@ -22,6 +21,7 @@ using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
+using Kiddo.Web.Configuration;
 
 MetricsFrameworkType metricsFramework = MetricsFrameworkType.None;
 
@@ -125,7 +125,7 @@ try
     }
 
     // Add implementations for backend abstractions
-    builder.Services.AddScoped<Kiddo.Web.Abstractions.ICurrentUserProvider, Kiddo.Web.Implementations.CurrentUserProvider>();
+    builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
     builder.Services.AddCustomSpaConfiguration(builder.Configuration);
     builder.Services.AddCustomDAL(builder.Configuration);
     builder.Services.AddBackgroundServiceClient(builder.Configuration);

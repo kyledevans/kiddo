@@ -1,6 +1,6 @@
 ﻿namespace Kiddo.Web.Security;
 
-using Kiddo.Web.Abstractions;
+using Kiddo.Web.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -13,7 +13,7 @@ public class EmailRequiredMiddleware
         Next = next;
     }
 
-    public async Task InvokeAsync(HttpContext context, DAL.UserDAL userDB, ICurrentUserProvider currentUser, IOptionsMonitor<Implementations.SpaOptions> spaOptionsMonitor)
+    public async Task InvokeAsync(HttpContext context, DAL.UserDAL userDB, ICurrentUserProvider currentUser, IOptionsMonitor<SpaOptions> spaOptionsMonitor)
     {
         // Don't need to perform any processing if the system is not configured to require confirmed email addresses.
         if (!spaOptionsMonitor.CurrentValue.IsEmailConfirmationRequired)

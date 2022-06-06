@@ -1,7 +1,8 @@
 ﻿namespace Kiddo.Web.Models;
 
 using AutoMapper;
-using Kiddo.Web.Implementations;
+using Kiddo.Web.Configuration;
+using Kiddo.Web.Security;
 using Kiddo.WebContract.Profile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,15 +17,15 @@ public class ProfileModel
     private DAL.KiddoDAL DB { get; set; }
     private DAL.UserDAL UserDB { get; set; }
     private IMapper Mapper { get; set; }
-    private Abstractions.ICurrentUserProvider CurrentUser { get; set; }
+    private ICurrentUserProvider CurrentUser { get; set; }
     private IAuthorizationService AuthorizationService { get; set; }
     private HttpContext HttpContext { get; set; }
     private UserManager<Database.Models.User> UserManager { get; set; }
     private IOptionsMonitor<SmtpOptions> SmtpOptions { get; set; }
-    private Implementations.SpaOptions SpaConfig { get; set; }
+    private SpaOptions SpaConfig { get; set; }
     private Validators Validators { get; set; }
 
-    public ProfileModel(Validators validators, UserManager<Database.Models.User> userManager, DAL.KiddoDAL db, DAL.UserDAL userDB, IMapper mapper, Abstractions.ICurrentUserProvider currentUser, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor, IOptionsMonitor<SmtpOptions> smtpOptions, IOptionsMonitor<Implementations.SpaOptions> spaConfigurationMonitor)
+    public ProfileModel(Validators validators, UserManager<Database.Models.User> userManager, DAL.KiddoDAL db, DAL.UserDAL userDB, IMapper mapper, ICurrentUserProvider currentUser, IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor, IOptionsMonitor<SmtpOptions> smtpOptions, IOptionsMonitor<SpaOptions> spaConfigurationMonitor)
     {
         DB = db;
         UserDB = userDB;
