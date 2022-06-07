@@ -36,3 +36,10 @@ export const NavigatorContainer: FunctionComponent = ({ children }) => {
     </div>
   );
 }
+
+export default function ProfileNavigation() {
+  return (<>
+    <RouterCommandBarButton to="/profile" className={pageStyles.navigatorLink}>Profile</RouterCommandBarButton>
+    <RouterCommandBarButton to="/profile/logins" className={pageStyles.navigatorLink}>Logins</RouterCommandBarButton>
+  </>);
+}

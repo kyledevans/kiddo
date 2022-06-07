@@ -11,7 +11,6 @@ import { useTitleEffect } from "../common/title";
 import { useSnackbar } from "../common/snackbar";
 import { ErrorCallout, ErrorCalloutControl } from "../common/error-callout";
 import { PolicyType, withRequiredPolicy } from "../common/current-authorization";
-import { NavigatorContainer } from "./navigator";
 import { Toolbar, ToolbarColumn3 } from "../common/toolbar";
 
 interface PageFormType {
@@ -138,32 +137,30 @@ const ProfilePageInner: FunctionComponent<{ profile: Profile, setProfile: (newPr
   }, [handleSubmit, onSubmitValid, onSubmitInvalid, isSubmitting, isValidating]);
 
   return (
-    <NavigatorContainer>
-      <div className={pageStyles.page}>
-        <Toolbar>
-          <ToolbarColumn3>
-            <CommandBarButton id="btnSave" className={pageStyles.btnSave} text="Save" onClick={onSaveClick} iconProps={icons.save} disabled={!isDirty} /><ErrorCallout target="#btnSave" control={saveErrorDlg}><Text variant="small">Error: Unable to save.</Text></ErrorCallout>
-          </ToolbarColumn3>
-        </Toolbar>
-        <form className={pageStyles.editForm} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
-          <div className={pageStyles.profileTab}>
-            <div className={`${pageStyles.row}`}>
-              <Controller name="email" render={({ field, fieldState }) => <TextField className={pageStyles.col1} label="Email" type="email" autoComplete="email" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
-              {profile.isEmailConfirmed || !isNonEmptyString(profile.email) ? (<></>) : (<PrimaryButton className={pageStyles.col2} onClick={onConfirmClick}>Confirm email</PrimaryButton>)}
-            </div>
-            <div className={`${pageStyles.row}`}>
-              <Controller name="displayName" rules={{ required: true }} render={({ field, fieldState }) => <TextField className={pageStyles.col1} label="Display name" required autoComplete="name" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
-            </div>
-            <div className={`${pageStyles.row}`}>
-              <Controller name="givenName" render={({ field, fieldState }) => <TextField className={pageStyles.col1} label="First name" autoComplete="given-name" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
-            </div>
-            <div className={`${pageStyles.row}`}>
-              <Controller name="surname" render={({ field, fieldState }) => <TextField className={pageStyles.col1} label="Last name" autoComplete="family-name" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
-            </div>
+    <div className={pageStyles.page}>
+      <Toolbar>
+        <ToolbarColumn3>
+          <CommandBarButton id="btnSave" className={pageStyles.btnSave} text="Save" onClick={onSaveClick} iconProps={icons.save} disabled={!isDirty} /><ErrorCallout target="#btnSave" control={saveErrorDlg}><Text variant="small">Error: Unable to save.</Text></ErrorCallout>
+        </ToolbarColumn3>
+      </Toolbar>
+      <form className={pageStyles.editForm} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
+        <div className={pageStyles.profileTab}>
+          <div className={`${pageStyles.row}`}>
+            <Controller name="email" render={({ field, fieldState }) => <TextField className={pageStyles.col1} label="Email" type="email" autoComplete="email" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
+            {profile.isEmailConfirmed || !isNonEmptyString(profile.email) ? (<></>) : (<PrimaryButton className={pageStyles.col2} onClick={onConfirmClick}>Confirm email</PrimaryButton>)}
           </div>
-        </form>
-      </div>
-    </NavigatorContainer>
+          <div className={`${pageStyles.row}`}>
+            <Controller name="displayName" rules={{ required: true }} render={({ field, fieldState }) => <TextField className={pageStyles.col1} label="Display name" required autoComplete="name" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
+          </div>
+          <div className={`${pageStyles.row}`}>
+            <Controller name="givenName" render={({ field, fieldState }) => <TextField className={pageStyles.col1} label="First name" autoComplete="given-name" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
+          </div>
+          <div className={`${pageStyles.row}`}>
+            <Controller name="surname" render={({ field, fieldState }) => <TextField className={pageStyles.col1} label="Last name" autoComplete="family-name" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
+          </div>
+        </div>
+      </form>
+    </div>
   );
 }
 

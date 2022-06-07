@@ -8,34 +8,15 @@ import { useTitleEffect } from "../common/title";
 import { Profile } from "../api/profile";
 import { AccountLink, RegisterStatusCodeType } from "../api/azure-ad";
 import { Api } from "../api/api";
-import { AppTheme, TopToolbarTheme } from "../common/themes";
+import { AppTheme } from "../common/themes";
 import { AzureAdAuthenticator } from "../common/azure-ad-authenticator";
 import { AuthenticationMethodType } from "../common/authentication";
 import { useSpaConfiguration } from "../common/spa-configuration";
 import { useAuthenticationManager } from "../common/authentication-react";
 import { DialogControlType, PasswordChangeDialog, PasswordRemoveDialog, PasswordResetDialog, PasswordSetDialog } from "./dialogs";
 import { Toolbar, ToolbarColumn3 } from "../common/toolbar";
-import { NavigatorContainer } from "./navigator";
 
 const pageStyles = mergeStyleSets({
-  pageNavigator: {
-    display: "grid",
-    gridTemplateColumns: "200px 1fr",
-    gridTemplateRows: "1fr"
-  },
-  navigatorLinksContainer: {
-    display: "grid",
-    gridTemplateColumns: "1fr",
-    gridAutoRows: "42px",
-    borderRight: `1px solid ${TopToolbarTheme.palette.neutralLight}`
-  },
-  navigatorLink: {
-    selectors: {
-      " .ms-Button-label": {
-        textAlign: "left"
-      }
-    }
-  },
   page: {
     display: "grid",
     gridTemplateColumns: "1fr",
@@ -264,18 +245,16 @@ const LoginsPageInner: FunctionComponent<{ profile: Profile, setProfile: (newPro
   }, [setProfile]);
 
   return (
-    <NavigatorContainer>
-      <div className={pageStyles.page}>
-        <Toolbar>
-          <ToolbarColumn3><CommandBarButton iconProps={icons.add} text="New login" menuProps={addIdentityMenuProps} primary /></ToolbarColumn3>
-        </Toolbar>
-        <div>
-          {profile.hasPassword ? (<PasswordIdentityCard profile={profile} setProfileUpdated={setProfileUpdated} />) : null}
-          {azureAdAccountLinks.map((external) => (<AzureAdIdentityCard key={external.userAzureAdId} profile={profile} external={external} onRemoved={onAzureAdAcccountLinkRemoved} />))}
-        </div>
-        <PasswordSetDialog dialogControl={setPasswordDlg} setProfileUpdated={setProfileUpdated} />
+    <div className={pageStyles.page}>
+      <Toolbar>
+        <ToolbarColumn3><CommandBarButton iconProps={icons.add} text="New login" menuProps={addIdentityMenuProps} primary /></ToolbarColumn3>
+      </Toolbar>
+      <div>
+        {profile.hasPassword ? (<PasswordIdentityCard profile={profile} setProfileUpdated={setProfileUpdated} />) : null}
+        {azureAdAccountLinks.map((external) => (<AzureAdIdentityCard key={external.userAzureAdId} profile={profile} external={external} onRemoved={onAzureAdAcccountLinkRemoved} />))}
       </div>
-    </NavigatorContainer>
+      <PasswordSetDialog dialogControl={setPasswordDlg} setProfileUpdated={setProfileUpdated} />
+    </div>
   );
 }
 

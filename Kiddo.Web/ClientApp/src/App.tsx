@@ -1,5 +1,5 @@
 import { Suspense, useEffect, lazy, FunctionComponent, MouseEvent, useCallback, MutableRefObject, useRef } from "react";
-import { Route, Switch, useHistory, useLocation, BrowserRouter as Router } from "react-router-dom";
+import { Route, Switch, useHistory, useLocation, BrowserRouter as Router, RouteProps } from "react-router-dom";
 import { Callout, ActionButton, IconButton, ThemeProvider, Panel, Text, PanelType, IPanelStyles, IPanelStyleProps, IStyleFunctionOrObject, mergeStyleSets, IIconProps, Customizer, ISettings, LayerHost, Target } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { DndProvider } from "react-dnd";
@@ -26,6 +26,7 @@ const AdminUsersPage = lazy(() => import("./admin/users-page/users-page"));
 const AdminUsersEditPage = lazy(() => import("./admin/users-page/users-edit-page"));
 const ProfilePage = lazy(() => import("./profile-page/profile-page"));
 const LoginsPage = lazy(() => import("./profile-page/logins-page"));
+const ProfileNavigation = lazy(() => import("./profile-page/navigator"));
 const PasswordLoginPage = lazy(() => import("./password-page/login-page"));
 const PasswordRegisterPage = lazy(() => import("./password-page/register-page"));
 const PasswordResetPage = lazy(() => import("./password-page/reset-page"));
@@ -35,21 +36,58 @@ const AzureAdLogoutPage = lazy(() => import("./azure-ad-page/azure-ad-logout-pag
 const EmailConfirmationPage = lazy(() => import("./email-confirmation-page/email-confirmation-page"));
 const Error404Page = lazy(() => import("./error-404-page/error-404-page"));
 
+interface AppRouteProps extends RouteProps {
+  navigation?: JSX.Element
+}
+
+const routes: AppRouteProps[] = [
+  { path: "/", exact: true, children: (<Suspense fallback={(<></>)}><DefaultPage /></Suspense>) },
+  { path: "/about", children: (<Suspense fallback={(<></>)}><AboutPage /></Suspense>) },
+  { path: "/accounts/:accountId/entries", children: (<Suspense fallback={(<></>)}><AccountsEntriesPage /></Suspense>) },
+  { path: "/accounts", children: (<Suspense fallback={(<></>)}><AccountsPage /></Suspense>) },
+  { path: "/manage/accounts/edit/:accountId", children: (<Suspense fallback={(<></>)}><AccountsEditPage /></Suspense>) },
+  { path: "/manage/accounts", children: (<Suspense fallback={(<></>)}><AccountsListPage /></Suspense>) },
+  { path: "/manage/currencies", children: (<Suspense fallback={(<></>)}><LookupsPage lookupTypeId={LookupTypeType.Currency} /></Suspense>) },
+  { path: "/admin/users/edit/:userId", children: (<Suspense fallback={(<></>)}><AdminUsersEditPage /></Suspense>) },
+  { path: "/admin/users", children: (<Suspense fallback={(<></>)}><AdminUsersPage /></Suspense>) },
+  { path: "/profile/logins", children: (<Suspense fallback={(<></>)}><LoginsPage /></Suspense>), navigation: <Suspense fallback={(<></>)}><ProfileNavigation /></Suspense> },
+  { path: "/profile", children: (<Suspense fallback={(<></>)}><ProfilePage /></Suspense>), navigation: <Suspense fallback={(<></>)}><ProfileNavigation /></Suspense> },
+  { path: "/password-login", children: (<Suspense fallback={(<></>)}><PasswordLoginPage /></Suspense>) },
+  { path: "/password-register", children: (<Suspense fallback={(<></>)}><PasswordRegisterPage /></Suspense>) },
+  { path: "/password-reset", children: (<Suspense fallback={(<></>)}><PasswordResetPage /></Suspense>) },
+  { path: "/azure-ad/login", children: (<Suspense fallback={(<></>)}><AzureAdLoginPage /></Suspense>) },
+  { path: "/azure-ad/logout", children: (<Suspense fallback={(<></>)}><AzureAdLogoutPage /></Suspense>) },
+  { path: "/authentication", children: (<Suspense fallback={(<></>)}><AuthenticationPage /></Suspense>) },
+  { path: "/email-confirmation", children: (<Suspense fallback={(<></>)}><EmailConfirmationPage /></Suspense>) },
+  { path: "*", children: (<Suspense fallback={(<></>)}><Error404Page /></Suspense>) } // This needs to always be last.
+];
+
 const appStyles = mergeStyleSets({
   app: {
     display: "grid",
+    gridTemplateColumns: "min-content 1fr",
     gridTemplateRows: "min-content min-content 1fr",
     overflow: "hidden"
   },
   topToolbar: {
     display: "grid",
-    gridTemplateColumns: "min-content 1fr min-content"
+    gridTemplateColumns: "min-content 1fr min-content",
+    gridColumn: "1 / span 2"
   },
   toolbarTitle: {
     padding: "0 16px 0 50px",
     display: "flex",
     alignItems: "center",
     userSelect: "none"
+  },
+  navigationRouterOutput: {
+    borderRight: `1px solid ${TopToolbarTheme.palette.neutralLight}`
+  },
+  navigationLinksContainer: {
+    width: 175,
+    display: "grid",
+    gridTemplateColumns: "1fr",
+    gridAutoRows: "32px"
   },
   primaryRouterOutput: {
     display: "grid",
@@ -204,103 +242,20 @@ function AppInner() {
       {(me != null && me !== "Anonymous" && me !== "Unregistered") ? (<>
         <NavPanel isOpen={isOpen} dismissPanel={dismissPanel} />
       </>) : null}
+      <ThemeProvider theme={AppTheme} className={appStyles.navigationRouterOutput}>
+        <Switch>
+          {routes.map((route, index) => (
+            <Route key={index} path={route.path} exact={route.exact}>
+              {route.navigation == null ? (<></>) : (<div className={appStyles.navigationLinksContainer}>{route.navigation}</div>)}
+            </Route>
+          ))}
+        </Switch>
+      </ThemeProvider>
       <ThemeProvider theme={AppTheme} className={appStyles.primaryRouterOutput}>
         <Switch>
-          <Route path="/" exact>
-            <Suspense fallback={<></>}>
-              <DefaultPage />
-            </Suspense>
-          </Route>
-          <Route path="/about">
-            <Suspense fallback={<></>}>
-              <AboutPage />
-            </Suspense>
-          </Route>
-          <Route path="/accounts/:accountId/entries">
-            <Suspense fallback={<></>}>
-              <AccountsEntriesPage />
-            </Suspense>
-          </Route>
-          <Route path="/accounts">
-            <Suspense fallback={<></>}>
-              <AccountsPage />
-            </Suspense>
-          </Route>
-          <Route path="/manage/accounts/edit/:accountId">
-            <Suspense fallback={<></>}>
-              <AccountsEditPage />
-            </Suspense>
-          </Route>
-          <Route path="/manage/accounts">
-            <Suspense fallback={<></>}>
-              <AccountsListPage />
-            </Suspense>
-          </Route>
-          <Route path="/manage/currencies">
-            <Suspense fallback={<></>}>
-              <LookupsPage lookupTypeId={LookupTypeType.Currency} />
-            </Suspense>
-          </Route>
-          <Route path="/admin/users/edit/:userId">
-            <Suspense fallback={<></>}>
-              <AdminUsersEditPage />
-            </Suspense>
-          </Route>
-          <Route path="/admin/users">
-            <Suspense fallback={<></>}>
-              <AdminUsersPage />
-            </Suspense>
-          </Route>
-          <Route path="/profile/logins">
-            <Suspense fallback={<></>}>
-              <LoginsPage />
-            </Suspense>
-          </Route>
-          <Route path="/profile">
-            <Suspense fallback={<></>}>
-              <ProfilePage />
-            </Suspense>
-          </Route>
-          <Route path="/password-login">
-            <Suspense fallback={<></>}>
-              <PasswordLoginPage />
-            </Suspense>
-          </Route>
-          <Route path="/password-register">
-            <Suspense fallback={<></>}>
-              <PasswordRegisterPage />
-            </Suspense>
-          </Route>
-          <Route path="/password-reset">
-            <Suspense fallback={<></>}>
-              <PasswordResetPage />
-            </Suspense>
-          </Route>
-          <Route path="/azure-ad/login">
-            <Suspense fallback={<></>}>
-              <AzureAdLoginPage />
-            </Suspense>
-          </Route>
-          <Route path="/azure-ad/logout">
-            <Suspense fallback={<></>}>
-              <AzureAdLogoutPage />
-            </Suspense>
-          </Route>
-          <Route path="/authentication">
-            <Suspense fallback={<></>}>
-              <AuthenticationPage />
-            </Suspense>
-          </Route>
-          <Route path="/email-confirmation">
-            <Suspense fallback={<></>}>
-              <EmailConfirmationPage />
-            </Suspense>
-          </Route>
-          <Route path="*">
-            <Suspense fallback={<></>}>
-              <Error404Page />
-            </Suspense>
-          </Route>
+          {routes.map((route, index) => (
+            <Route key={index} path={route.path} exact={route.exact} children={route.children} />
+          ))}
         </Switch>
       </ThemeProvider>
     </div>

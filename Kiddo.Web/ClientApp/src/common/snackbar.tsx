@@ -6,7 +6,8 @@ const snackbarStyles = mergeStyleSets({
   anchor: {
     display: "grid",
     justifyContent: "center",
-    gridTemplateColumns: "500px"
+    gridTemplateColumns: "500px",
+    gridColumn: "1 / span 2"
   },
   callout: {
     cursor: "default",
