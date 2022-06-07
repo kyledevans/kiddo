@@ -40,6 +40,10 @@ export class AzureAdClient {
   public async getAccountLinks(): Promise<AccountLink[]> {
     return await this.http.get(`/api/AzureAd/GetAccountLinks`);
   }
+
+  public async getAccountLinksByUserId(userId: string): Promise<AccountLink[]> {
+    return await this.http.get(`/api/AzureAd/GetAccountLinksByUserId?userId=${encodeURIComponent(userId)}`);
+  }
 }
 
 export interface RegisterRequest {

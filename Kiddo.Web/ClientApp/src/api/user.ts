@@ -41,6 +41,7 @@ export interface User {
   surname: string | null;
   email: string | null;
   isActive: boolean;
+  hasPassword: boolean;
 }
 
 export interface SearchUserResult {

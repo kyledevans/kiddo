@@ -43,6 +43,13 @@ public class AzureAdModel
         return retval;
     }
 
+    public async Task<List<AccountLink>> GetAccountLinksByUserId(Guid userId)
+    {
+        List<Database.Models.UserAzureAd> dbUserAzureAds = await UserDB.GetUserAzureAds(userId).ConfigureAwait(false);
+        List<AccountLink> retval = Mapper.Map<List<Database.Models.UserAzureAd>, List<AccountLink>>(dbUserAzureAds);
+        return retval;
+    }
+
     private bool ValidateProfileFields([NotNullWhen(true)] string? displayName, [NotNullWhen(true)] string? givenName, [NotNullWhen(true)] string? surname, [NotNullWhen(true)] string? email)
     {
         if (String.IsNullOrWhiteSpace(email) || String.IsNullOrWhiteSpace(displayName) || String.IsNullOrWhiteSpace(givenName) || String.IsNullOrWhiteSpace(surname)) return false;

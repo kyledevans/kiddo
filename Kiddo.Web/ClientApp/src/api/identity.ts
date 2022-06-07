@@ -48,9 +48,19 @@ export class IdentityClient {
     return await this.http.postEmpty(`/api/Identity/RemovePassword`);
   }
 
+  public async removePasswordByUserId(userId: string): Promise<void> {
+    return await this.http.postEmpty(`/api/Identity/RemovePasswordByUserId?userId=${encodeURIComponent(userId)}`);
+  }
+
   public async setPassword(newPassword: string): Promise<void> {
     const request: SetPasswordRequest = { newPassword };
     return await this.http.postEmpty(`/api/Identity/SetPassword`, request);
+  }
+
+  public async setPasswordByUserId(userId: string, newPassword: string): Promise<void> {
+    const request: SetPasswordRequest = { newPassword };
+    console.log(request);
+    return await this.http.postEmpty(`/api/Identity/SetPasswordByUserId?userId=${encodeURIComponent(userId)}`, request);
   }
 }
 

@@ -24,6 +24,8 @@ const AccountsEditPage = lazy(() => import("./accounts-edit-page/accounts-edit-p
 const LookupsPage = lazy(() => import("./lookups-page/lookups-page"));
 const AdminUsersPage = lazy(() => import("./admin/users-page/users-page"));
 const AdminUsersEditPage = lazy(() => import("./admin/users-page/users-edit-page"));
+const AdminUsersEditLoginsPage = lazy(() => import("./admin/users-page/users-edit-logins-page"));
+const AdminUsersEditNavigation = lazy(() => import("./admin/users-page/users-edit-navigation"));
 const ProfilePage = lazy(() => import("./profile-page/profile-page"));
 const LoginsPage = lazy(() => import("./profile-page/logins-page"));
 const ProfileNavigation = lazy(() => import("./profile-page/navigator"));
@@ -48,7 +50,8 @@ const routes: AppRouteProps[] = [
   { path: "/manage/accounts/edit/:accountId", children: (<Suspense fallback={(<></>)}><AccountsEditPage /></Suspense>) },
   { path: "/manage/accounts", children: (<Suspense fallback={(<></>)}><AccountsListPage /></Suspense>) },
   { path: "/manage/currencies", children: (<Suspense fallback={(<></>)}><LookupsPage lookupTypeId={LookupTypeType.Currency} /></Suspense>) },
-  { path: "/admin/users/edit/:userId", children: (<Suspense fallback={(<></>)}><AdminUsersEditPage /></Suspense>) },
+  { path: "/admin/users/edit/:userId/logins", children: (<Suspense fallback={(<></>)}><AdminUsersEditLoginsPage /></Suspense>), navigation: <Suspense fallback={<></>}><AdminUsersEditNavigation /></Suspense> },
+  { path: "/admin/users/edit/:userId", children: (<Suspense fallback={(<></>)}><AdminUsersEditPage /></Suspense>), navigation: <Suspense fallback={<></>}><AdminUsersEditNavigation /></Suspense> },
   { path: "/admin/users", children: (<Suspense fallback={(<></>)}><AdminUsersPage /></Suspense>) },
   { path: "/profile/logins", children: (<Suspense fallback={(<></>)}><LoginsPage /></Suspense>), navigation: <Suspense fallback={(<></>)}><ProfileNavigation /></Suspense> },
   { path: "/profile", children: (<Suspense fallback={(<></>)}><ProfilePage /></Suspense>), navigation: <Suspense fallback={(<></>)}><ProfileNavigation /></Suspense> },

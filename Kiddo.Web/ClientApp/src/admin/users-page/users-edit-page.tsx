@@ -86,7 +86,8 @@ function useInitializationEffect(userId: string, setUser: (newUser: User) => voi
           surname: null,
           displayName: "",
           email: null,
-          isActive: true
+          isActive: true,
+          hasPassword: false
         };
       } else {
         // Fetch existing user
@@ -217,29 +218,23 @@ const UsersEditPageInner: FunctionComponent<{ user: User, setUser: (newUser: Use
         <ToolbarColumn3><DeleteButton user={user} onDeleteConfirm={onDeleteConfirm} /><CommandBarButton type="submit" iconProps={icons.save} className={pageStyles.btnSave} disabled={!isDirty}>Save</CommandBarButton></ToolbarColumn3>
       </Toolbar>
       <div className={pageStyles.editForm}>
-        <Pivot>
-          <PivotItem headerText="Profile">
-            <div className={pageStyles.profileTab}>
-              <div className={`${pageStyles.row}`}>
-                <Controller name="displayName" rules={{ required: true }} render={({ field, fieldState }) => <TextField label="Display name" required autoComplete="edit-user-displayName" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
-              </div>
-              <div className={`${pageStyles.row}`}>
-                <Controller name="givenName" render={({ field, fieldState }) => <TextField label="First name" autoComplete="edit-user-givenName" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
-              </div>
-              <div className={`${pageStyles.row}`}>
-                <Controller name="surname" render={({ field, fieldState }) => <TextField label="Last name" autoComplete="edit-user-surname" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
-              </div>
-              <div className={`${pageStyles.row}`}>
-                <Controller name="email" render={({ field, fieldState }) => <TextField label="Email" type="email" autoComplete="edit-user-email" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
-              </div>
-              <div className={`${pageStyles.row}`}>
-                <SecurityRoleField userId={user.userId} />
-              </div>
-            </div>
-          </PivotItem>
-          <PivotItem headerText="Identity">
-          </PivotItem>
-        </Pivot>
+        <div className={pageStyles.profileTab}>
+          <div className={`${pageStyles.row}`}>
+            <Controller name="displayName" rules={{ required: true }} render={({ field, fieldState }) => <TextField label="Display name" required autoComplete="edit-user-displayName" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
+          </div>
+          <div className={`${pageStyles.row}`}>
+            <Controller name="givenName" render={({ field, fieldState }) => <TextField label="First name" autoComplete="edit-user-givenName" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
+          </div>
+          <div className={`${pageStyles.row}`}>
+            <Controller name="surname" render={({ field, fieldState }) => <TextField label="Last name" autoComplete="edit-user-surname" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
+          </div>
+          <div className={`${pageStyles.row}`}>
+            <Controller name="email" render={({ field, fieldState }) => <TextField label="Email" type="email" autoComplete="edit-user-email" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
+          </div>
+          <div className={`${pageStyles.row}`}>
+            <SecurityRoleField userId={user.userId} />
+          </div>
+        </div>
       </div>
     </form>
   );
@@ -254,7 +249,7 @@ const UsersEditPageDeps: FunctionComponent<{}> = () => {
   });
   const [user, setUser] = useState<User | null>(null);
 
-  useTitleEffect(userId === GuidEmpty ? "New User" : "Edit User");
+  useTitleEffect(userId === GuidEmpty ? "New User" : "Edit Profile");
   useInitializationEffect(userId, setUser);
 
   return (

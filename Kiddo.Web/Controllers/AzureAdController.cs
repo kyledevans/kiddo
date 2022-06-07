@@ -78,4 +78,12 @@ public class AzureAdController : ControllerBase
         List<AccountLink> response = await AzureAdModel.GetAccountLinks().ConfigureAwait(false);
         return response;
     }
+
+    [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
+    [HttpGet("GetAccountLinksByUserId")]
+    public async Task<ActionResult<List<AccountLink>>> GetAccountLinksByUserId(Guid userId)
+    {
+        List<AccountLink> response = await AzureAdModel.GetAccountLinks().ConfigureAwait(false);
+        return response;
+    }
 }

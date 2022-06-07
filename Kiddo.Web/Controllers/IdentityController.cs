@@ -86,6 +86,17 @@ public class IdentityController : ControllerBase
         else return BadRequest();
     }
 
+    [HttpPost("RemovePasswordByUserId")]
+    [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.Password)]
+    [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
+    [Security.EmailRequired]
+    public async Task<ActionResult> RemovePasswordByUserId(Guid userId)
+    {
+        bool response = await Model.RemovePasswordByUserId(userId).ConfigureAwait(false);
+        if (response) return Ok();
+        else return BadRequest();
+    }
+
     [HttpPost("SetPassword")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.Password)]
     [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
@@ -93,6 +104,17 @@ public class IdentityController : ControllerBase
     public async Task<ActionResult> SetPassword(WebContract.Identity.SetPasswordRequest setRequest)
     {
         bool response = await Model.SetPassword(setRequest.NewPassword).ConfigureAwait(false);
+        if (response) return Ok();
+        else return BadRequest();
+    }
+
+    [HttpPost("SetPasswordByUserId")]
+    [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.Password)]
+    [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
+    [Security.EmailRequired]
+    public async Task<ActionResult> SetPasswordByUserId(Guid userId, WebContract.Identity.SetPasswordRequest setRequest)
+    {
+        bool response = await Model.SetPasswordByUserId(userId, setRequest.NewPassword).ConfigureAwait(false);
         if (response) return Ok();
         else return BadRequest();
     }

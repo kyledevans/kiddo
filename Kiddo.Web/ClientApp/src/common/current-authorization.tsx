@@ -67,7 +67,7 @@ export function useCurrentPolicies(): CurrentPoliciesContextType {
   return context;
 }
 
-export function withRequiredPolicy<T>(RestrictedComponent: ComponentType<T>, policy: PolicyType) {
+export function withRequiredPolicy<T>(RestrictedComponent: ComponentType<T>, policy: PolicyType, showErrorMessage?: boolean) {
   const NewComponent = (props: T) => {
     const [policies] = useCurrentPolicies();
 
@@ -87,6 +87,8 @@ export function withRequiredPolicy<T>(RestrictedComponent: ComponentType<T>, pol
       return (<></>);
     } else if (isSatisfied) {
       return (<RestrictedComponent {...props} />);
+    } else if (showErrorMessage === false) {
+      return (<></>);
     } else {
       return (
         <div className={pageStyles.page}>

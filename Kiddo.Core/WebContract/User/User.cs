@@ -12,4 +12,5 @@ public class User
     public string? Surname { get; set; }
     public string? Email { get; set; }
     public bool IsActive { get; set; }
+    public bool HasPassword { get; set; }
 }

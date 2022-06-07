@@ -52,6 +52,7 @@ public class UserModel
         WebContract.User.User retval = Mapper.Map<Database.Models.User, WebContract.User.User>(dbUser);
         string? role = (await UserManager.GetRolesAsync(dbUser).ConfigureAwait(false)).FirstOrDefault();
         retval.SecurityRole = role == null ? null : Enum.Parse<Constants.SecurityRoleType>(role);
+        retval.HasPassword = await UserManager.HasPasswordAsync(dbUser).ConfigureAwait(false);
         return retval;
     }
 
@@ -86,6 +87,7 @@ public class UserModel
         await trans.CommitAsync().ConfigureAwait(false);
         WebContract.User.User retval = Mapper.Map<Database.Models.User, WebContract.User.User>(dbUser);
         retval.SecurityRole = newUser.SecurityRole;
+        retval.HasPassword = await UserManager.HasPasswordAsync(dbUser).ConfigureAwait(false);
         return retval;
     }
 
@@ -142,6 +144,7 @@ public class UserModel
 
         WebContract.User.User retval = Mapper.Map<Database.Models.User, WebContract.User.User>(dbUser);
         retval.SecurityRole = update.SecurityRole;
+        retval.HasPassword = await UserManager.HasPasswordAsync(dbUser).ConfigureAwait(false);
         return retval;
     }
 

@@ -232,11 +232,33 @@ public class IdentityModel
         return removeResult.Succeeded;
     }
 
+    public async Task<bool> RemovePasswordByUserId(Guid userId)
+    {
+        Database.Models.User dbUser = await UserDB.GetUser(userId).ConfigureAwait(false);
+        IdentityResult removeResult = await UserManager.RemovePasswordAsync(dbUser).ConfigureAwait(false);
+        return removeResult.Succeeded;
+    }
+
     public async Task<bool> SetPassword(string newPassword)
     {
         Database.Models.User dbUser = await UserDB.GetUser(await CurrentUser.GetUserIdRequired().ConfigureAwait(false)).ConfigureAwait(false);
 
         if (await UserManager.HasPasswordAsync(dbUser).ConfigureAwait(false)) return false; // Don't allow blindly setting the password if the user already has one.
+
+        IdentityResult addResult = await UserManager.AddPasswordAsync(dbUser, newPassword).ConfigureAwait(false);
+
+        return addResult.Succeeded;
+    }
+
+    public async Task<bool> SetPasswordByUserId(Guid userId, string newPassword)
+    {
+        Database.Models.User dbUser = await UserDB.GetUser(userId).ConfigureAwait(false);
+
+        // Remove existing password if necessary.
+        if (await UserManager.HasPasswordAsync(dbUser).ConfigureAwait(false))
+        {
+            await UserManager.RemovePasswordAsync(dbUser).ConfigureAwait(false);
+        }
 
         IdentityResult addResult = await UserManager.AddPasswordAsync(dbUser, newPassword).ConfigureAwait(false);
 
