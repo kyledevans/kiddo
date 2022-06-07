@@ -102,8 +102,7 @@ function LoginPageInner() {
     const response = await authenticator.login(email, password);
 
     if (response.success) {
-      history.push("/");
-      window.setTimeout(() => { window.location.reload(); });
+      window.location.assign("/");
     } else {
       setErrorMessage("Incorrect username or password.");
     }

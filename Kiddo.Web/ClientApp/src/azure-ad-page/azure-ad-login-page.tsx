@@ -140,8 +140,7 @@ function LoginPageInner() {
 
     if (regResponse.statusCode === RegisterStatusCodeType.Success) {
       reset();
-      history.push("/");
-      window.setTimeout(() => { window.location.reload(); });
+      window.location.assign("/");
     }
   }, [authManager, history, reset]);
 

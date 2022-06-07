@@ -194,10 +194,12 @@ const ProfileCallout: FunctionComponent<{ target: Target, control: MutableRefObj
   const [isVisible, { setTrue: setIsVisible, setFalse: setIsHidden }] = useBoolean(false);
   //const onLogoutClick = useLogoutCallback();
   const authManager = useAuthenticationManager();
+  const history = useHistory();
 
   const onLogoutClick = useCallback(async () => {
     if (authManager != null) {
       await authManager.logout();
+      history.push("/");
       window.location.reload();
     }
   }, [authManager]);
