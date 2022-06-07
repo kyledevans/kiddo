@@ -88,7 +88,10 @@ export function withRequiredProfile<T>(RestrictedComponent: ComponentType<T>) {
   const NewComponent = (props: T) => {
     const [me] = useCurrentProfile();
 
-    if (me == null || me === "Anonymous" || me === "Unregistered") {
+    if (me == null) {
+      // Still waiting for things to load.
+      return (<></>);
+    } else if (me === "Anonymous" || me === "Unregistered") {
       return (
         <div className={pageStyles.page}>
           <Text className={pageStyles.header} block variant="xxLargePlus">Registration required</Text>

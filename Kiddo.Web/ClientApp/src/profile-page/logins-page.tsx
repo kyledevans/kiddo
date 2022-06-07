@@ -270,6 +270,6 @@ const LoginsPageDeps: FunctionComponent = () => {
   </>);
 }
 
-const ProfilePage = withRequiredPolicy(LoginsPageDeps, PolicyType.ReadOnlyUser);
+let ProfilePage = withRequiredPolicy(LoginsPageDeps, PolicyType.ReadOnlyUser);
 
 export default ProfilePage;

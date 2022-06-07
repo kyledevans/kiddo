@@ -1,4 +1,4 @@
-import { createContext, useState, Dispatch, SetStateAction, FunctionComponent, useEffect, useContext, ComponentType } from "react";
+import { createContext, useState, Dispatch, SetStateAction, FunctionComponent, useEffect, useContext, ComponentType, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { Text, mergeStyleSets } from "@fluentui/react";
 
@@ -51,8 +51,6 @@ export const AppCurrentAuthorizationContextProvider: FunctionComponent = ({ chil
       if (isAccessTokenReady) {
         const newPolicies = await Api.profile.getAuthorizationPolicies();
         setPolicies(newPolicies);
-      } else {
-        setPolicies(defaultPolicies);
       }
     })();
   }, [isAccessTokenReady, setPolicies]);
@@ -72,30 +70,22 @@ export function useCurrentPolicies(): CurrentPoliciesContextType {
 export function withRequiredPolicy<T>(RestrictedComponent: ComponentType<T>, policy: PolicyType) {
   const NewComponent = (props: T) => {
     const [policies] = useCurrentPolicies();
-    const history = useHistory();
-    const authMethod = useCurrentAuthenticationMethod();
-    const authManagerState = useAuthenticationManagerState();
 
-    useEffect(() => {
-      if (authManagerState === AuthenticationManagerStateType.Running && authMethod === "Anonymous") {
-        history.push("/");
-      }
-    }, [authMethod, history, authManagerState]);
+    const isSatisfied: boolean | null = useMemo(() => {
+      if (policies == null) return null;
+      else if (policy === PolicyType.AzureAd && policies.isAzureAd) return true;
+      else if (policy === PolicyType.AspNetIdentity && policies.isAspNetIdentity) return true;
+      else if (policy === PolicyType.SuperAdministrator && policies.isSuperAdministrator) return true;
+      else if (policy === PolicyType.Administrator && policies.isAdministrator) return true;
+      else if (policy === PolicyType.User && policies.isUser) return true;
+      else if (policy === PolicyType.ReadOnlyUser && policies.isReadOnlyUser) return true;
+      else return false;
+    }, [policies]);
 
-    // Don't render anything if we are still waiting for the policy information to load.
-    if (policies == null) return (<></>);
-
-    let isSatisfied: boolean;
-
-    if (policy === PolicyType.AzureAd && policies.isAzureAd) isSatisfied = true;
-    else if (policy === PolicyType.AspNetIdentity && policies.isAspNetIdentity) isSatisfied = true;
-    else if (policy === PolicyType.SuperAdministrator && policies.isSuperAdministrator) isSatisfied = true;
-    else if (policy === PolicyType.Administrator && policies.isAdministrator) isSatisfied = true;
-    else if (policy === PolicyType.User && policies.isUser) isSatisfied = true;
-    else if (policy === PolicyType.ReadOnlyUser && policies.isReadOnlyUser) isSatisfied = true;
-    else isSatisfied = false;
-
-    if (isSatisfied) {
+    if (isSatisfied == null) {
+      // Don't render anything if we are still waiting for the policy information to load.
+      return (<></>);
+    } else if (isSatisfied) {
       return (<RestrictedComponent {...props} />);
     } else {
       return (
