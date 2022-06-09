@@ -119,7 +119,6 @@ public class ProfileModel
         if (!updateResult.Succeeded) throw new Exception("Unable to update user.");
 
         await trans.CommitAsync().ConfigureAwait(false);
-        List<Database.Models.UserAzureAd> dbUserAzureAds = await UserDB.GetUserAzureAds(userId).ConfigureAwait(false);
 
         WebContract.Profile.Profile profile = Mapper.Map<Database.Models.User, WebContract.Profile.Profile>(dbUser);
 

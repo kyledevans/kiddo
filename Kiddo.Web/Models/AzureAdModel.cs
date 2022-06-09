@@ -38,15 +38,62 @@ public class AzureAdModel
     public async Task<List<AccountLink>> GetAccountLinks()
     {
         Guid userId = await CurrentUser.GetUserIdRequired().ConfigureAwait(false);
-        List<Database.Models.UserAzureAd> dbUserAzureAds = await UserDB.GetUserAzureAds(userId).ConfigureAwait(false);
-        List<AccountLink> retval = Mapper.Map<List<Database.Models.UserAzureAd>, List<AccountLink>>(dbUserAzureAds);
+        Database.Models.User dbUser = await UserDB.GetUser(userId).ConfigureAwait(false);
+        IList<UserLoginInfo> logins = await UserManager.GetLoginsAsync(dbUser).ConfigureAwait(false);
+        List<AccountLink> retval = new();
+
+        foreach (UserLoginInfo userLogin in logins)
+        {
+            Database.Models.JsonFields.UserLoginAzureAdInformation? graphUser = System.Text.Json.JsonSerializer.Deserialize<Database.Models.JsonFields.UserLoginAzureAdInformation>(userLogin.ProviderDisplayName);
+            if (graphUser == null)
+            {
+                continue;
+            }
+            else
+            {
+                retval.Add(new() {
+                    DisplayName = graphUser.DisplayName ?? String.Empty,
+                    Email = graphUser.Email ?? String.Empty,
+                    GivenName = graphUser.GivenName ?? String.Empty,
+                    Surname = graphUser.Surname ?? String.Empty,
+                    GraphId = userLogin.ProviderKey,
+                    ProviderKey = userLogin.ProviderKey,
+                    LoginProvider = SecurityConstants.Scheme.AzureAd
+                });
+            }
+        }
+
         return retval;
     }
 
     public async Task<List<AccountLink>> GetAccountLinksByUserId(Guid userId)
     {
-        List<Database.Models.UserAzureAd> dbUserAzureAds = await UserDB.GetUserAzureAds(userId).ConfigureAwait(false);
-        List<AccountLink> retval = Mapper.Map<List<Database.Models.UserAzureAd>, List<AccountLink>>(dbUserAzureAds);
+        Database.Models.User dbUser = await UserDB.GetUser(userId).ConfigureAwait(false);
+        IList<UserLoginInfo> logins = await UserManager.GetLoginsAsync(dbUser).ConfigureAwait(false);
+        List<AccountLink> retval = new();
+
+        foreach (UserLoginInfo userLogin in logins)
+        {
+            Database.Models.JsonFields.UserLoginAzureAdInformation? graphUser = System.Text.Json.JsonSerializer.Deserialize<Database.Models.JsonFields.UserLoginAzureAdInformation>(userLogin.ProviderDisplayName);
+
+            if (graphUser == null)
+            {
+                continue;
+            }
+            else
+            {
+                retval.Add(new() {
+                    DisplayName = graphUser.DisplayName ?? String.Empty,
+                    Email = graphUser.Email ?? String.Empty,
+                    GivenName = graphUser.GivenName ?? String.Empty,
+                    Surname = graphUser.Surname ?? String.Empty,
+                    GraphId = userLogin.ProviderKey,
+                    ProviderKey = userLogin.ProviderKey,
+                    LoginProvider = SecurityConstants.Scheme.AzureAd
+                });
+            }
+        }
+
         return retval;
     }
 
@@ -84,16 +131,12 @@ public class AzureAdModel
         return (graphId, graphUser);
     }
 
-    public async Task RemoveLink(int userAzureAdId)
+    public async Task RemoveLink(string providerKey)
     {
         using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction trans = await DB.BeginTransaction().ConfigureAwait(false);
-        List<Database.Models.UserAzureAd> dbUserAzureAds = await UserDB.GetUserAzureAds(await CurrentUser.GetUserIdRequired().ConfigureAwait(false)).ConfigureAwait(false);
 
-        Database.Models.UserAzureAd? dbAzure = dbUserAzureAds.Where(usaad => usaad.UserAzureAdId == userAzureAdId).FirstOrDefault();
-
-        if (dbAzure == null) throw new Exception("Unable to find the Azure AD link for the current user.");
-
-        await UserDB.DeleteUserAzureAd(dbAzure).ConfigureAwait(false);
+        Database.Models.User dbUser = await UserDB.GetUser(await CurrentUser.GetUserIdRequired().ConfigureAwait(false)).ConfigureAwait(false);
+        await UserManager.RemoveLoginAsync(dbUser, SecurityConstants.Scheme.AzureAd, providerKey).ConfigureAwait(false);
         await trans.CommitAsync().ConfigureAwait(false);
     }
 
@@ -101,7 +144,6 @@ public class AzureAdModel
     {
         using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction trans = await DB.BeginTransaction().ConfigureAwait(false);
 
-        Database.Models.UserAzureAd? dbUserAzureAd;
         Database.Models.User? dbUser;
         string graphId;
         User graphUser;
@@ -112,10 +154,10 @@ public class AzureAdModel
         // Retrieve information from Microsoft Graph.
         (graphId, graphUser) = await GetUserGraphInformation(manualAccessToken).ConfigureAwait(false);
 
-        dbUserAzureAd = await UserDB.GetUserAzureAdByGraphId(graphId).ConfigureAwait(false);
+        dbUser = await UserManager.FindByLoginAsync(SecurityConstants.Scheme.AzureAd, graphUser.Id).ConfigureAwait(false);
 
         // Get the application user if possible.
-        if (dbUserAzureAd == null)
+        if (dbUser == null)
         {
             // The Azure AD user has not yet been registered.
             if (!await RegistrationBehavior.GetIsRegistrationAllowed().ConfigureAwait(false)) throw new Exception("Registration is not enabled.");
@@ -163,21 +205,19 @@ public class AzureAdModel
                     EmailConfirmed = true   // Automatically assume the email address is confirmed, because we are trusting that Microsoft has performed this step.
                 };
 
-                dbUserAzureAd = new() {
-                    GraphId = graphId,
-                    DisplayName = displayName.Trim(),
-                    GivenName = givenName.Trim(),
-                    Surname = surname.Trim(),
-                    Email = email.Trim()
+                Database.Models.JsonFields.UserLoginAzureAdInformation userAzureAdInformation = new() {
+                    DisplayName = graphUser.DisplayName,
+                    GivenName = graphUser.GivenName,
+                    Surname = graphUser.Surname,
+                    Email = graphUser.Mail
                 };
 
                 Kiddo.Constants.SecurityRoleType? initialRole = await RegistrationBehavior.GetInitialRole().ConfigureAwait(false);
                 if (initialRole == null) throw new Exception("initialRole cannot be null.");
 
                 await UserManager.CreateAsync(dbUser).ConfigureAwait(false);
-                dbUserAzureAd.UserId = dbUser.Id;
-                await UserDB.InsertUserAzureAd(dbUserAzureAd).ConfigureAwait(false);
                 await UserManager.AddToRoleAsync(dbUser, initialRole.ToString()).ConfigureAwait(false);
+                await UserManager.AddLoginAsync(dbUser, new(SecurityConstants.Scheme.AzureAd, graphUser.Id, System.Text.Json.JsonSerializer.Serialize(userAzureAdInformation))).ConfigureAwait(false);
                 await trans.CommitAsync().ConfigureAwait(false);
 
                 Logger.LogInformation($"Registered user from Azure AD.  (Microsoft Graph user Id: {graphId}).  Application user Id: {dbUser.Id}.");
@@ -200,17 +240,15 @@ public class AzureAdModel
                 //      3) The user's email is NOT confirmed.
                 dbUser.EmailConfirmed = true;
 
-                dbUserAzureAd = new() {
-                    GraphId = graphId,
-                    DisplayName = displayName.Trim(),
-                    GivenName = givenName.Trim(),
-                    Surname = surname.Trim(),
-                    Email = (email ?? "").Trim(),
-                    UserId = existingUser.Id
+                Database.Models.JsonFields.UserLoginAzureAdInformation userAzureAdInformation = new() {
+                    DisplayName = graphUser.DisplayName,
+                    GivenName = graphUser.GivenName,
+                    Surname = graphUser.Surname,
+                    Email = graphUser.Mail
                 };
 
                 await UserManager.UpdateAsync(dbUser).ConfigureAwait(false);
-                await UserDB.InsertUserAzureAd(dbUserAzureAd).ConfigureAwait(false);
+                await UserManager.AddLoginAsync(dbUser, new(SecurityConstants.Scheme.AzureAd, graphUser.Id, System.Text.Json.JsonSerializer.Serialize(userAzureAdInformation))).ConfigureAwait(false);
                 await trans.CommitAsync().ConfigureAwait(false);
 
                 Logger.LogInformation($"Registered user from Azure AD to an existing application user account.  (Microsoft Graph user Id: {graphId}).  Existing application user Id: {existingUser.Id}.");
@@ -231,102 +269,14 @@ public class AzureAdModel
         else
         {
             // The Azure AD user has already been registered.  Nothing needs to be done.
-            Logger.LogInformation($"Azure AD user was previously registered.  (Microsoft Graph user Id: {graphId}).  Existing application user Id: {dbUserAzureAd.UserId}.");
+            Logger.LogInformation($"Azure AD user was previously registered.  (Microsoft Graph user Id: {graphId}).  Existing application user Id: {dbUser.Id}.");
 
             // Registration failed, but only because the Azure AD user was already registered and linked to an application user account.
             // Indicate that the registration failed, but we can at least provide the application user Id to the caller.  It's safe to
             // return the application user Id associated with the Azure AD user because they were already registered and verified.
-            retval = new() { StatusCode = RegisterStatusCodeType.AlreadyRegistered, UserId = dbUserAzureAd.UserId };
+            retval = new() { StatusCode = RegisterStatusCodeType.AlreadyRegistered, UserId = dbUser.Id };
         }
 
         return retval;
-    }
-
-    public async Task EnsureProfile()
-    {
-        using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction trans = await DB.BeginTransaction().ConfigureAwait(false);
-
-        string? graphId = await CurrentUser.GetAzureAdIdentifier().ConfigureAwait(false);
-
-        if (graphId == null) throw new InvalidOperationException("Cannot proceed because the current user's Microsoft Graph Id was not discovered.");
-
-        Database.Models.UserAzureAd? dbUserAzureAd = await UserDB.GetUserAzureAdByGraphId(graphId).ConfigureAwait(false);
-        Database.Models.User dbUser;
-        User? graphUser = await GraphClient.Me.Request().WithAuthenticationScheme(Web.Security.SecurityConstants.Scheme.AzureAd).GetAsync().ConfigureAwait(false);
-        string? cleansedEmail;
-
-        if (graphUser == null) throw new Exception($"Unable to retrieve user record from Microsoft Graph API (Microsoft Graph user Id: {graphId}).");
-
-        // For simplicity we are going to only import email addresses that we are actually able to use.
-        if (String.IsNullOrWhiteSpace(graphUser.Mail))
-        {
-            cleansedEmail = null;
-            Logger.LogInformation($"Email address synchronization has been set to null because the value retrieved from the Microsoft Graph API is empty (Microsoft Graph user Id: {graphId}).");
-        }
-        else if (!Validators.IsParseableEmail(graphUser.Mail))
-        {
-            Logger.LogWarning($"Email address synchronization has been set to null because the value retrieved from the Microsoft Graph API does not pass validation (Microsoft Graph user Id: {graphId}).");
-            cleansedEmail = null;
-        }
-        else
-        {
-            cleansedEmail = graphUser.Mail.Trim();
-        }
-
-        // Perform the necessary synchronization.
-        if (dbUserAzureAd == null)
-        {
-            // New user.  Create relevant entries.
-            dbUserAzureAd = new() {
-                GraphId = graphId,
-                DisplayName = graphUser.DisplayName,
-                GivenName = graphUser.GivenName,
-                Surname = graphUser.Surname,
-                Email = cleansedEmail
-            };
-
-            dbUser = new() {
-                UserName = graphId,
-                DisplayName = graphUser.DisplayName,
-                GivenName = graphUser.GivenName,
-                Surname = graphUser.Surname,
-                Email = cleansedEmail
-            };
-
-            IdentityResult createResult = await UserManager.CreateAsync(dbUser).ConfigureAwait(false);
-
-            if (createResult.Succeeded)
-            {
-                dbUserAzureAd.UserId = dbUser.Id;
-                await UserDB.InsertUserAzureAd(dbUserAzureAd).ConfigureAwait(false);
-                await UserManager.AddToRoleAsync(dbUser, nameof(Kiddo.Constants.SecurityRoleType.ReadOnlyUser)).ConfigureAwait(false);
-                await trans.CommitAsync().ConfigureAwait(false);
-
-                Logger.LogInformation($"User created (Microsoft Graph user Id: {graphId}, application UserId: {dbUser.Id}).");
-            }
-            else
-            {
-                Exception ex = new("Unable to automatically register user.");
-                ex.Data.Add($"{nameof(createResult)}", createResult);   // TODO: Need to serialize the list of errors and throw them in the exception message.
-                throw ex;
-            }
-        }
-        else
-        {
-            // Existing user.  Update relevant record.
-            dbUserAzureAd.DisplayName = graphUser.DisplayName;
-            dbUserAzureAd.GivenName = graphUser.GivenName;
-            dbUserAzureAd.Surname = graphUser.Surname;
-            dbUserAzureAd.Email = cleansedEmail;
-
-            await DB.SaveChanges().ConfigureAwait(false);
-            await trans.CommitAsync().ConfigureAwait(false);
-
-            // Note: For now this is intentionally NOT updating the actual User table.  Because it's possible the user may have customized some of those values.  If we want
-            // to have ongoing synchronization to this table we should probably implement some way to toggle sync on or off for each user.
-        }
-
-        // Force the system to refresh the current user provider so that other areas of the application can begin using references to the current UserId.
-        await CurrentUser.Initialize(true).ConfigureAwait(false);
     }
 }

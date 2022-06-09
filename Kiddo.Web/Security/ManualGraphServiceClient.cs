@@ -55,14 +55,14 @@ public class ManualGraphServiceClient : IManualGraphServiceClient
 
         // Manual access token was provided.  We have to use that when retrieving information from MS Graph instead of the currently
         // logged in user provided by ICurrentUser.
-        DelegateAuthenticationProvider authProvider = new(AuthenticateRequestAsyncDelegate);
+        DelegateAuthenticationProvider authProvider = new(AuthenticateRequestAsync);
 
         ManualAccessToken = manualAccessToken;
         ConfidentialClientApp = confidentialClientApp;
         GraphClient = new(authProvider);
     }
 
-    private async Task AuthenticateRequestAsyncDelegate(HttpRequestMessage request)
+    private async Task AuthenticateRequestAsync(HttpRequestMessage request)
     {
         if (ConfidentialClientApp == null) throw new Exception("Cannot provide authentication to Microsoft Graph because the IConfidentialClientApplication has not been instantiated.");
 

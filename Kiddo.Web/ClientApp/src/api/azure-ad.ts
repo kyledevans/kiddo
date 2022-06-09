@@ -32,8 +32,8 @@ export class AzureAdClient {
     return await this.http.post<RegisterResponse>(`/api/AzureAd/LinkToExisting`, request);
   }
 
-  public async removeLink(userAzureAdId: number): Promise<void> {
-    const request: RemoveLinkRequest = { userAzureAdId };
+  public async removeLink(providerKey: string): Promise<void> {
+    const request: RemoveLinkRequest = { providerKey };
     return await this.http.postEmpty(`/api/AzureAd/RemoveLink`, request);
   }
 
@@ -89,11 +89,11 @@ export enum RegisterStatusCodeType {
 }
 
 export interface RemoveLinkRequest {
-  userAzureAdId: number;
+  providerKey: string;
 }
 
 export interface AccountLink {
-  userAzureAdId: number;
+  providerKey: string;
   graphId: string;
   displayName: string;
   givenName: string;

@@ -156,7 +156,7 @@ const PasswordIdentityCard: FunctionComponent<{ profile: Profile, setProfileUpda
 const AzureAdIdentityCard: FunctionComponent<{ profile: Profile, external: AccountLink, onRemoved: () => void }> = ({ profile, external, onRemoved }) => {
   const onRemoveLinkClick = useCallback(async () => {
     if (external == null) throw new Error("external cannot be null or undefined.");
-    await Api.azureAd.removeLink(external.userAzureAdId);
+    await Api.azureAd.removeLink(external.providerKey);
     onRemoved();
   }, [external, onRemoved]);
 
@@ -251,7 +251,7 @@ const LoginsPageInner: FunctionComponent<{ profile: Profile, setProfile: (newPro
       </Toolbar>
       <div>
         {profile.hasPassword ? (<PasswordIdentityCard profile={profile} setProfileUpdated={setProfileUpdated} />) : null}
-        {azureAdAccountLinks.map((external) => (<AzureAdIdentityCard key={external.userAzureAdId} profile={profile} external={external} onRemoved={onAzureAdAcccountLinkRemoved} />))}
+        {azureAdAccountLinks.map((external) => (<AzureAdIdentityCard key={external.providerKey} profile={profile} external={external} onRemoved={onAzureAdAcccountLinkRemoved} />))}
       </div>
       <PasswordSetDialog dialogControl={setPasswordDlg} setProfileUpdated={setProfileUpdated} />
     </div>

@@ -27,8 +27,6 @@ public class KiddoDbContext : IdentityDbContext<User, Role, Guid, UserClaim, Use
     public virtual DbSet<Entry> Entries { get; set; }
     public virtual DbSet<Lookup> Lookups { get; set; }
     public virtual DbSet<LookupType> LookupTypes { get; set; }
-    //public virtual DbSet<User> Users { get; set; }
-    public virtual DbSet<UserAzureAd> UserAzureAds { get; set; }
 #nullable restore
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -149,46 +147,6 @@ public class KiddoDbContext : IdentityDbContext<User, Role, Guid, UserClaim, Use
             r.ToTable("Role", "User");
 
             r.Property(r => r.Id).ValueGeneratedOnAdd().HasColumnName("RoleId");
-        });
-
-        /*modelBuilder.Entity<User>(us =>
-        {
-            us.ToTable("User");
-
-            us.Property(us => us.ExternalId).HasMaxLength(4000);
-
-            us.Property(us => us.DisplayName).HasMaxLength(4000).IsRequired();
-
-            us.Property(us => us.GivenName).HasMaxLength(4000);
-
-            us.Property(us => us.Surname).HasMaxLength(4000);
-
-            us.Property(us => us.Email).HasMaxLength(4000);
-
-            us.HasOne(us => us.SecurityRoleLookup)
-                .WithMany(l => l.SecurityRoleUsers)
-                .HasForeignKey(us => us.SecurityRoleLookupId)
-                .HasConstraintName("FK_User_Lookup_SecurityRole");
-        });*/
-
-        modelBuilder.Entity<UserAzureAd>(usaad =>
-        {
-            usaad.ToTable("UserAzureAd", "User");
-
-            usaad.Property(usaad => usaad.GraphId).HasMaxLength(4000).IsRequired();
-
-            usaad.Property(usaad => usaad.DisplayName).HasMaxLength(4000).IsRequired();
-
-            usaad.Property(usaad => usaad.GivenName).HasMaxLength(4000).IsRequired();
-
-            usaad.Property(usaad => usaad.Surname).HasMaxLength(4000).IsRequired();
-
-            usaad.Property(usaad => usaad.Email).HasMaxLength(4000);
-
-            usaad.HasOne(usaad => usaad.User)
-                .WithMany(us => us.UserAzureAds)
-                .HasForeignKey(usaad => usaad.UserId)
-                .HasConstraintName("FK_UserAzureAd_User");
         });
 
         /* Seed data */

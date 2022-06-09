@@ -1,6 +1,7 @@
 ﻿namespace Kiddo.Web.Security;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
 public class CurrentUserProvider : ICurrentUserProvider
@@ -12,12 +13,14 @@ public class CurrentUserProvider : ICurrentUserProvider
     private string? CachedAzureIdentifier { get; set; }
     private Guid? CachedAspNetIdentifier { get; set; }
     private Guid? UserId { get; set; }
+    private UserManager<Database.Models.User> UserManager { get; set; }
 
-    public CurrentUserProvider(IHttpContextAccessor contextAccessor, IAuthorizationService authorizationService, DAL.UserDAL userDB)
+    public CurrentUserProvider(IHttpContextAccessor contextAccessor, IAuthorizationService authorizationService, DAL.UserDAL userDB, UserManager<Database.Models.User> userManager)
     {
         ContextAccessor = contextAccessor;
         AuthorizationService = authorizationService;
         UserDB = userDB;
+        UserManager = userManager;
     }
 
     public async Task Initialize(bool forceRefresh = false)
@@ -40,12 +43,12 @@ public class CurrentUserProvider : ICurrentUserProvider
         {
             if ((await AuthorizationService.AuthorizeAsync(ContextAccessor.HttpContext.User, SecurityConstants.Policy.AzureAd).ConfigureAwait(false)).Succeeded)
             {
-                Claim? userIdClaim = ContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-                if (userIdClaim == null) throw new Exception($"Cannot determine the current user because the claim \"{ClaimTypes.NameIdentifier}\" could not be found.");
-                Guid? userId = await UserDB.GetUserIdByGraphId(userIdClaim.Value).ConfigureAwait(false);
+                Claim? userIdClaim = ContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == Microsoft.Identity.Web.ClaimConstants.ObjectId);
+                if (userIdClaim == null) throw new Exception($"Cannot determine the current user because the claim \"{Microsoft.Identity.Web.ClaimConstants.ObjectId}\" could not be found.");
+                Database.Models.User? dbUser = await UserManager.FindByLoginAsync(SecurityConstants.Scheme.AzureAd, userIdClaim.Value).ConfigureAwait(false);
 
                 CachedAzureIdentifier = userIdClaim.Value;
-                UserId = userId;
+                UserId = dbUser?.Id;
             }
             else if ((await AuthorizationService.AuthorizeAsync(ContextAccessor.HttpContext.User, SecurityConstants.Policy.AspNetIdentity).ConfigureAwait(false)).Succeeded)
             {

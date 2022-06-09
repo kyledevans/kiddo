@@ -131,32 +131,6 @@ namespace Kiddo.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserAzureAd",
-                schema: "User",
-                columns: table => new
-                {
-                    UserAzureAdId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GraphId = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-                    DisplayName = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-                    GivenName = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-                    Surname = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserAzureAd", x => x.UserAzureAdId);
-                    table.ForeignKey(
-                        name: "FK_UserAzureAd_User",
-                        column: x => x.UserId,
-                        principalSchema: "User",
-                        principalTable: "User",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserClaim",
                 schema: "User",
                 columns: table => new
@@ -359,12 +333,6 @@ namespace Kiddo.Database.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserAzureAd_UserId",
-                schema: "User",
-                table: "UserAzureAd",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserClaim_UserId",
                 schema: "User",
                 table: "UserClaim",
@@ -390,10 +358,6 @@ namespace Kiddo.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "RoleClaim",
-                schema: "User");
-
-            migrationBuilder.DropTable(
-                name: "UserAzureAd",
                 schema: "User");
 
             migrationBuilder.DropTable(

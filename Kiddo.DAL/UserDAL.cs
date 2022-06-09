@@ -53,23 +53,6 @@ public class UserDAL
             select us).FirstAsync().ConfigureAwait(false);
     }
 
-    public async Task<User?> GetUserByGraphId(string graphId)
-    {
-        return await (
-            from usaad in DbContext.UserAzureAds
-            where usaad.GraphId == graphId
-            select usaad.User).FirstOrDefaultAsync().ConfigureAwait(false);
-    }
-
-    public async Task<List<UserAzureAd>> GetUserAzureAds(Guid userId)
-    {
-        return await (
-            from usaad in DbContext.UserAzureAds
-            where usaad.UserId == userId
-            orderby usaad.UserAzureAdId
-            select usaad).ToListAsync().ConfigureAwait(false);
-    }
-
     public async Task<List<User>> GetAllUsers(int maxCount)
     {
         IOrderedQueryable<User> query = (
@@ -94,33 +77,5 @@ public class UserDAL
             where userIds.Contains(us.Id)
             orderby us.Id
             select us).ToListAsync().ConfigureAwait(false);
-    }
-
-    public async Task<UserAzureAd?> GetUserAzureAdByGraphId(string graphId)
-    {
-        return await (
-            from usaad in DbContext.UserAzureAds
-            where usaad.GraphId == graphId
-            select usaad).FirstOrDefaultAsync().ConfigureAwait(false);
-    }
-
-    public async Task<Guid?> GetUserIdByGraphId(string graphId)
-    {
-        return await (
-            from usaad in DbContext.UserAzureAds
-            where usaad.GraphId == graphId
-            select (Guid?)usaad.UserId).FirstOrDefaultAsync().ConfigureAwait(false);
-    }
-
-    public async Task InsertUserAzureAd(UserAzureAd newRecord)
-    {
-        await DbContext.UserAzureAds.AddAsync(newRecord).ConfigureAwait(false);
-        await DbContext.SaveChangesAsync().ConfigureAwait(false);
-    }
-
-    public async Task DeleteUserAzureAd(UserAzureAd rec)
-    {
-        DbContext.UserAzureAds.Remove(rec);
-        await DbContext.SaveChangesAsync().ConfigureAwait(false);
     }
 }

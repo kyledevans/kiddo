@@ -11,13 +11,13 @@ GO
 BEGIN TRANSACTION;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     IF SCHEMA_ID(N'User') IS NULL EXEC(N'CREATE SCHEMA [User];');
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [Account] (
         [AccountId] int NOT NULL IDENTITY,
@@ -29,7 +29,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [LookupType] (
         [LookupTypeId] int NOT NULL,
@@ -41,7 +41,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [User].[Role] (
         [RoleId] uniqueidentifier NOT NULL,
@@ -53,7 +53,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [User].[User] (
         [UserId] uniqueidentifier NOT NULL,
@@ -79,7 +79,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [Lookup] (
         [LookupId] int NOT NULL,
@@ -95,7 +95,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [User].[RoleClaim] (
         [RoleClaimId] int NOT NULL IDENTITY,
@@ -108,23 +108,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
-BEGIN
-    CREATE TABLE [User].[UserAzureAd] (
-        [UserAzureAdId] int NOT NULL IDENTITY,
-        [UserId] uniqueidentifier NOT NULL,
-        [GraphId] nvarchar(4000) NOT NULL,
-        [DisplayName] nvarchar(4000) NOT NULL,
-        [GivenName] nvarchar(4000) NOT NULL,
-        [Surname] nvarchar(4000) NOT NULL,
-        [Email] nvarchar(4000) NULL,
-        CONSTRAINT [PK_UserAzureAd] PRIMARY KEY ([UserAzureAdId]),
-        CONSTRAINT [FK_UserAzureAd_User] FOREIGN KEY ([UserId]) REFERENCES [User].[User] ([UserId]) ON DELETE CASCADE
-    );
-END;
-GO
-
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [User].[UserClaim] (
         [UserClaimId] int NOT NULL IDENTITY,
@@ -137,7 +121,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [User].[UserLogin] (
         [LoginProvider] nvarchar(450) NOT NULL,
@@ -150,7 +134,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [User].[UserRole] (
         [UserId] uniqueidentifier NOT NULL,
@@ -162,7 +146,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [User].[UserToken] (
         [UserId] uniqueidentifier NOT NULL,
@@ -175,7 +159,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE TABLE [Entry] (
         [EntryId] int NOT NULL IDENTITY,
@@ -192,7 +176,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'LookupTypeId', N'Description', N'Name', N'SortOrder') AND [object_id] = OBJECT_ID(N'[LookupType]'))
         SET IDENTITY_INSERT [LookupType] ON;
@@ -205,7 +189,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RoleId', N'ConcurrencyStamp', N'Name', N'NormalizedName') AND [object_id] = OBJECT_ID(N'[User].[Role]'))
         SET IDENTITY_INSERT [User].[Role] ON;
@@ -219,7 +203,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'LookupId', N'Description', N'IsActive', N'LookupTypeId', N'Name', N'NameShort', N'SortOrder') AND [object_id] = OBJECT_ID(N'[Lookup]'))
         SET IDENTITY_INSERT [Lookup] ON;
@@ -230,82 +214,76 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE INDEX [IX_Entry_AccountId] ON [Entry] ([AccountId]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE INDEX [IX_Entry_CurrencyLookupId] ON [Entry] ([CurrencyLookupId]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE INDEX [IX_Entry_UserId] ON [Entry] ([UserId]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE INDEX [IX_Lookup_LookupTypeId] ON [Lookup] ([LookupTypeId]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     EXEC(N'CREATE UNIQUE INDEX [RoleNameIndex] ON [User].[Role] ([NormalizedName]) WHERE [NormalizedName] IS NOT NULL');
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE INDEX [IX_RoleClaim_RoleId] ON [User].[RoleClaim] ([RoleId]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE INDEX [EmailIndex] ON [User].[User] ([NormalizedEmail]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     EXEC(N'CREATE UNIQUE INDEX [UserNameIndex] ON [User].[User] ([NormalizedUserName]) WHERE [NormalizedUserName] IS NOT NULL');
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
-BEGIN
-    CREATE INDEX [IX_UserAzureAd_UserId] ON [User].[UserAzureAd] ([UserId]);
-END;
-GO
-
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE INDEX [IX_UserClaim_UserId] ON [User].[UserClaim] ([UserId]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE INDEX [IX_UserLogin_UserId] ON [User].[UserLogin] ([UserId]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     CREATE INDEX [IX_UserRole_RoleId] ON [User].[UserRole] ([RoleId]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215600_InitialCreateGenerated')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084524_InitialCreateGenerated')
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20220527215600_InitialCreateGenerated', N'6.0.4');
+    VALUES (N'20220609084524_InitialCreateGenerated', N'6.0.4');
 END;
 GO
 
@@ -315,16 +293,16 @@ GO
 BEGIN TRANSACTION;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215644_InitialCreateManual')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084536_InitialCreateManual')
 BEGIN
     ALTER TABLE [Entry] ADD CONSTRAINT CK_Entry_CurrencyLookupId_NonZero CHECK (CurrencyLookupId <> 0);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220527215644_InitialCreateManual')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20220609084536_InitialCreateManual')
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20220527215644_InitialCreateManual', N'6.0.4');
+    VALUES (N'20220609084536_InitialCreateManual', N'6.0.4');
 END;
 GO
 

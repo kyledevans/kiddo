@@ -340,48 +340,6 @@ namespace Kiddo.Database.Migrations
                     b.ToTable("User", "User");
                 });
 
-            modelBuilder.Entity("Kiddo.Database.Models.UserAzureAd", b =>
-                {
-                    b.Property<int>("UserAzureAdId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserAzureAdId"), 1L, 1);
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
-
-                    b.Property<string>("GivenName")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
-
-                    b.Property<string>("GraphId")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserAzureAdId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserAzureAd", "User");
-                });
-
             modelBuilder.Entity("Kiddo.Database.Models.UserClaim", b =>
                 {
                     b.Property<int>("Id")
@@ -509,18 +467,6 @@ namespace Kiddo.Database.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Kiddo.Database.Models.UserAzureAd", b =>
-                {
-                    b.HasOne("Kiddo.Database.Models.User", "User")
-                        .WithMany("UserAzureAds")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_UserAzureAd_User");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Kiddo.Database.Models.UserClaim", b =>
                 {
                     b.HasOne("Kiddo.Database.Models.User", null)
@@ -581,8 +527,6 @@ namespace Kiddo.Database.Migrations
             modelBuilder.Entity("Kiddo.Database.Models.User", b =>
                 {
                     b.Navigation("Entries");
-
-                    b.Navigation("UserAzureAds");
                 });
 #pragma warning restore 612, 618
         }

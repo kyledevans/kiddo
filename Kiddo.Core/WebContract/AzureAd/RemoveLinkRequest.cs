@@ -4,5 +4,5 @@
 
 public class RemoveLinkRequest
 {
-    public int UserAzureAdId { get; set; }
+    public string ProviderKey { get; set; } = String.Empty;
 }

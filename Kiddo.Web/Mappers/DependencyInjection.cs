@@ -25,7 +25,6 @@ public static class DependencyInjection
             config.CreateMap<Kiddo.Database.Models.Account, Kiddo.WebContract.Account.SearchAccountResult>();
             config.CreateMap<SpaOptions, Kiddo.WebContract.App.SpaConfiguration>();
             config.CreateMap<Kiddo.Database.Models.User, Kiddo.WebContract.Profile.Profile>().ForMember(e => e.UserId, op => op.MapFrom(source => source.Id)).ForMember(e => e.IsEmailConfirmed, op => op.MapFrom(source => source.EmailConfirmed));
-            config.CreateMap<Kiddo.Database.Models.UserAzureAd, Kiddo.WebContract.AzureAd.AccountLink>();
             config.CreateMap<Microsoft.AspNetCore.Identity.PasswordOptions, Kiddo.WebContract.Identity.PasswordValidationRules>();
             config.CreateMap<Microsoft.AspNetCore.Identity.IdentityError, Kiddo.WebContract.Identity.IdentityError>();
         });

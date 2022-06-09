@@ -66,7 +66,7 @@ public class AzureAdController : ControllerBase
     [Security.EmailRequired]
     public async Task<ActionResult> RemoveLink(RemoveLinkRequest removeRequest)
     {
-        await AzureAdModel.RemoveLink(removeRequest.UserAzureAdId).ConfigureAwait(false);
+        await AzureAdModel.RemoveLink(removeRequest.ProviderKey).ConfigureAwait(false);
         return Ok();
     }
 
@@ -83,7 +83,7 @@ public class AzureAdController : ControllerBase
     [HttpGet("GetAccountLinksByUserId")]
     public async Task<ActionResult<List<AccountLink>>> GetAccountLinksByUserId(Guid userId)
     {
-        List<AccountLink> response = await AzureAdModel.GetAccountLinks().ConfigureAwait(false);
+        List<AccountLink> response = await AzureAdModel.GetAccountLinksByUserId(userId).ConfigureAwait(false);
         return response;
     }
 }

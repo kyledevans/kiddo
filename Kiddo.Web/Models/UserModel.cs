@@ -177,13 +177,6 @@ public class UserModel
 
             if (deleteRoles.Except(allowedRoles).Any()) throw new UnauthorizedAccessException($"Currently logged in user is not allowed to delete user(s) based on role.");
 
-            List<Database.Models.UserAzureAd> dbUserAzureAds = await UserDB.GetUserAzureAds(dbUser.Id).ConfigureAwait(false);
-
-            foreach (Database.Models.UserAzureAd usaad in dbUserAzureAds)
-            {
-                await UserDB.DeleteUserAzureAd(usaad).ConfigureAwait(false);
-            }
-
             await UserManager.DeleteAsync(dbUser).ConfigureAwait(false);
         }
 

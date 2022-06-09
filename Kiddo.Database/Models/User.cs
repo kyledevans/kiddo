@@ -10,12 +10,10 @@ public class User : IdentityUser<Guid>
     public string? GivenName { get; set; }
     public string? Surname { get; set; }
 
-    public ICollection<UserAzureAd> UserAzureAds { get; set; }
     public ICollection<Entry> Entries { get; set; }
 
     public User()
     {
-        UserAzureAds = new HashSet<UserAzureAd>();
         Entries = new HashSet<Entry>();
     }
 }

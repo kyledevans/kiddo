@@ -4,7 +4,8 @@
 
 public class AccountLink
 {
-    public int UserAzureAdId { get; set; }
+    public string LoginProvider { get; set; } = String.Empty;
+    public string ProviderKey { get; set; } = String.Empty;
     public string GraphId { get; set; } = String.Empty;
     public string DisplayName { get; set; } = String.Empty;
     public string GivenName { get; set; } = String.Empty;

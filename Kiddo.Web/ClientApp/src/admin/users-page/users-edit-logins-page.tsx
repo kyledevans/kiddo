@@ -157,7 +157,7 @@ const PasswordIdentityCard: FunctionComponent<{ user: User, setUserUpdated: (new
 const AzureAdIdentityCard: FunctionComponent<{ external: AccountLink, onRemoved: () => void }> = ({ external, onRemoved }) => {
   const onRemoveLinkClick = useCallback(async () => {
     if (external == null) throw new Error("external cannot be null or undefined.");
-    await Api.azureAd.removeLink(external.userAzureAdId);
+    await Api.azureAd.removeLink(external.providerKey);
     onRemoved();
   }, [external, onRemoved]);
 
@@ -206,7 +206,7 @@ const UsersEditLoginsPageInner: FunctionComponent = () => {
   return (
     <div className={pageStyles.page}>
       <PasswordIdentityCard user={user} setUserUpdated={setUser} />
-      {azureAdAccountLinks.map((external) => (<AzureAdIdentityCard key={external.userAzureAdId} external={external} onRemoved={onAzureAdAcccountLinkRemoved} />))}
+      {azureAdAccountLinks.map((external) => (<AzureAdIdentityCard key={external.providerKey} external={external} onRemoved={onAzureAdAcccountLinkRemoved} />))}
     </div>
   );
 }

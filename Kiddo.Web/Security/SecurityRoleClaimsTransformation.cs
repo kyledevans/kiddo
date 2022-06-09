@@ -55,10 +55,10 @@ public class SecurityRoleClaimsTransformation : IClaimsTransformation
         }
         else if (isAzureAdJwt)
         {
-            Claim? userIdClaim = newIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            if (userIdClaim == null) throw new Exception($"Cannot determine the current user because the claim \"{ClaimTypes.NameIdentifier}\" could not be found.");
+            Claim? userIdClaim = newIdentity.Claims.FirstOrDefault(c => c.Type == Microsoft.Identity.Web.ClaimConstants.ObjectId);
+            if (userIdClaim == null) throw new Exception($"Cannot determine the current user because the claim \"{Microsoft.Identity.Web.ClaimConstants.ObjectId}\" could not be found.");
 
-            Database.Models.User? dbUser = await UserDB.GetUserByGraphId(userIdClaim.Value).ConfigureAwait(false);
+            Database.Models.User? dbUser = await UserManager.FindByLoginAsync(SecurityConstants.Scheme.AzureAd, userIdClaim.Value).ConfigureAwait(false);
 
             if (dbUser != null)
             {
