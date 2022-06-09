@@ -121,6 +121,7 @@ public static class SecurityExtensionMethods
                     ClockSkew = TimeSpan.Zero
                 };
             })
+            // TODO: This probably needs to be deleted.  It was superseded by AuthenticationMethodEnablementMiddleware.
             .PostConfigure<IOptions<SpaOptions>>((options, spaOptions) => {
                 // Effectively disable password authentication when appsettings.json is configured without support.
                 if (!spaOptions.Value.AuthMethods.Contains(WebContract.AuthenticationMethodType.Password))
@@ -131,6 +132,7 @@ public static class SecurityExtensionMethods
                 }
             });
 
+        // TODO: This probably needs to be deleted.  It was superseded by AuthenticationMethodEnablementMiddleware.
         services.AddOptions<JwtBearerOptions>(SecurityConstants.Scheme.AzureAd)
             .PostConfigure<IOptions<SpaOptions>>((options, spaOptions) => {
                 // Effectively disable AzureAd when appsettings.json is configured without support.
