@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.Identity;
 
-#nullable enable annotations
-
 public class RegisterResponse
 {
     public bool Success { get; set; }

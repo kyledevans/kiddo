@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.Profile;
 
-#nullable enable annotations
-
 public class ConfirmEmailRequest
 {
     public string? Email { get; set; }

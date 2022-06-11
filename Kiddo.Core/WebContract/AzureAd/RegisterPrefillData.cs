@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.AzureAd;
 
-#nullable enable annotations
-
 public class RegisterPrefillData
 {
     public string? DisplayName { get; set; }

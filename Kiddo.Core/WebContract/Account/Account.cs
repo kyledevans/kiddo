@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.Account;
 
-#nullable enable annotations
-
 public class Account
 {
     public int AccountId { get; set; }

@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract;
 
-#nullable enable annotations
-
 public static class ProblemDetailTypes
 {
     /// <summary>

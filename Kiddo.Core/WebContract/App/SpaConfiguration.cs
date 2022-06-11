@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.App;
 
-#nullable enable annotations
-
 /// <summary>
 /// Configuration for the client-side SPA.
 /// </summary>

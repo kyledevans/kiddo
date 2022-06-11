@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.Profile;
 
-#nullable enable annotations
-
 public class PolicySummary
 {
     public bool IsSuperAdministrator { get; set; }

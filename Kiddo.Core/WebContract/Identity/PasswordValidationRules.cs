@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.Identity;
 
-#nullable enable annotations
-
 public class PasswordValidationRules
 {
     public int RequiredLength { get; set; }

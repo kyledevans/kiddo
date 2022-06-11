@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.Identity;
 
-#nullable enable annotations
-
 public class GenerateNewJwtsResponse
 {
     public string RefreshToken { get; set; } = String.Empty;

@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.Entry;
 
-#nullable enable annotations
-
 public class Entry
 {
     public int EntryId { get; set; }

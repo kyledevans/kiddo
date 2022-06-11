@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.Identity;
 
-#nullable enable annotations
-
 public class AuthenticateRequest
 {
     public string Username { get; set; } = String.Empty;

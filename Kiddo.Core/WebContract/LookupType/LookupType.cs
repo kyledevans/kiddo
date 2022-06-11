@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.LookupType;
 
-#nullable enable annotations
-
 public class LookupType
 {
     public int LookupTypeId { get; set; }

@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.Identity;
 
-#nullable enable annotations
-
 public class RegisterRequest
 {
     public string Email { get; set; } = String.Empty;

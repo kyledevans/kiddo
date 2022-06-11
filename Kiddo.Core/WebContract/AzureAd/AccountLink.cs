@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.AzureAd;
 
-#nullable enable annotations
-
 public class AccountLink
 {
     public string LoginProvider { get; set; } = String.Empty;

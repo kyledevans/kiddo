@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.AzureAd;
 
-#nullable enable annotations
-
 public class RegisterResponse
 {
     public RegisterStatusCodeType StatusCode { get; set; }

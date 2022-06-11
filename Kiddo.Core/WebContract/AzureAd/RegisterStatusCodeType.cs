@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.AzureAd;
 
-#nullable enable annotations
-
 /// <summary>
 /// Result codes for registration.
 /// </summary>

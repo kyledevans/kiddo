@@ -1,7 +1,5 @@
 ﻿namespace Kiddo.WebContract.User;
 
-#nullable enable annotations
-
 public class User
 {
     public Guid UserId { get; set; }
