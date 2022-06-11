@@ -106,6 +106,7 @@ public static class SecurityExtensionMethods
                     JwtSecurityTokenHandler jwtHandler = new();
                     JwtSecurityToken token = jwtHandler.ReadJwtToken(encodedToken);
 
+                    // TODO: Figure out a better way to determine the issuer is from Azure AD.
                     if (token.Issuer.StartsWith(SecurityConstants.AzureAd.IssuerPrefix)) return SecurityConstants.Scheme.AzureAd;
                     else return SecurityConstants.Scheme.AspNetIdentity;
                 };
@@ -120,26 +121,6 @@ public static class SecurityExtensionMethods
                     ValidAudiences = new[] { SecurityConstants.AspNetIdentity.AccessTokenAudience, SecurityConstants.AspNetIdentity.RefreshTokenAudience },
                     ClockSkew = TimeSpan.Zero
                 };
-            })
-            // TODO: This probably needs to be deleted.  It was superseded by AuthenticationMethodEnablementMiddleware.
-            .PostConfigure<IOptions<SpaOptions>>((options, spaOptions) => {
-                // Effectively disable password authentication when appsettings.json is configured without support.
-                if (!spaOptions.Value.AuthMethods.Contains(WebContract.AuthenticationMethodType.Password))
-                {
-                    options.TokenValidationParameters.LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => {
-                        return false;
-                    };
-                }
-            });
-
-        // TODO: This probably needs to be deleted.  It was superseded by AuthenticationMethodEnablementMiddleware.
-        services.AddOptions<JwtBearerOptions>(SecurityConstants.Scheme.AzureAd)
-            .PostConfigure<IOptions<SpaOptions>>((options, spaOptions) => {
-                // Effectively disable AzureAd when appsettings.json is configured without support.
-                if (!spaOptions.Value.AuthMethods.Contains(WebContract.AuthenticationMethodType.AzureAd))
-                {
-                    options.TokenValidationParameters.LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => false;
-                }
             });
 
         // Add authorization policies

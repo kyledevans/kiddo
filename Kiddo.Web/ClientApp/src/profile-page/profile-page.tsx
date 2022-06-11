@@ -12,7 +12,6 @@ import { useSnackbar } from "../common/snackbar";
 import { ErrorCallout, ErrorCalloutControl } from "../common/error-callout";
 import { PolicyType, withRequiredPolicy } from "../common/current-authorization";
 import { Toolbar, ToolbarColumn3 } from "../common/toolbar";
-import { withRequiredProfile } from "../common/current-profile";
 
 interface PageFormType {
   givenName: string;

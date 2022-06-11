@@ -142,7 +142,7 @@ function LoginPageInner() {
       reset();
       window.location.assign("/");
     }
-  }, [authManager, history, reset]);
+  }, [authManager, reset]);
 
   const onSubmitInvalid: SubmitErrorHandler<PageFormType> = useCallback((errors, _ev) => { }, []);
 

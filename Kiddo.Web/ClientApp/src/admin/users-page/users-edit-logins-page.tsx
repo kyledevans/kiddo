@@ -1,4 +1,4 @@
-import { FunctionComponent, useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { FunctionComponent, useState, useEffect, useCallback, useRef } from "react";
 import { FontWeights, CommandBarButton, mergeStyleSets, IIconProps, Text} from "@fluentui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
@@ -7,15 +7,10 @@ import { useParams } from "react-router-dom";
 import { PolicyType, withRequiredPolicy } from "../../common/current-authorization";
 import { useTitleEffect } from "../../common/title";
 import { User } from "../../api/user";
-import { AccountLink, RegisterStatusCodeType } from "../../api/azure-ad";
+import { AccountLink } from "../../api/azure-ad";
 import { Api } from "../../api/api";
 import { AppTheme } from "../../common/themes";
-import { AzureAdAuthenticator } from "../../common/azure-ad-authenticator";
-import { AuthenticationMethodType } from "../../common/authentication";
-import { useSpaConfiguration } from "../../common/spa-configuration";
-import { useAuthenticationManager } from "../../common/authentication-react";
 import { DialogControlType, PasswordRemoveDialog, PasswordResetDialog, PasswordSetDialog } from "./dialogs";
-import { Toolbar, ToolbarColumn3 } from "../../common/toolbar";
 import { withRequiredEmailConfirmation, withRequiredProfile } from "../../common/current-profile";
 import { GuidEmpty } from "../../api/constants";
 

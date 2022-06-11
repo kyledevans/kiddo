@@ -8,7 +8,6 @@ import { useTitleEffect } from "../common/title";
 import { RouterDefaultLinkButton } from "../common/router-link";
 import { useAuthenticationManager } from "../common/authentication-react";
 import { PasswordAuthenticator } from "../common/password-authenticator";
-import { useHistory } from "react-router-dom";
 import { Api } from "../api/api";
 import { useSnackbar } from "../common/snackbar";
 import { AppName } from "../common/constants";
@@ -84,7 +83,6 @@ const resetModalProps: IModalProps = {
 function LoginPageInner() {
   const { getValues } = useFormContext<PageFormType>();
   const authManager = useAuthenticationManager();
-  const history = useHistory();
   const resetDialogControl = useRef<DialogControlType | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>();
 
@@ -106,7 +104,7 @@ function LoginPageInner() {
     } else {
       setErrorMessage("Incorrect username or password.");
     }
-  }, [authManager, history]);
+  }, [authManager]);
 
   const onLoginSubmit = useReactHookFormSubmitHandlers(onLoginSubmitValid);
 

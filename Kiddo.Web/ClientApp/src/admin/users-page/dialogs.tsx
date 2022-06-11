@@ -1,4 +1,4 @@
-import { FunctionComponent, useCallback, useEffect, MutableRefObject, FormEventHandler, useState } from "react";
+import { FunctionComponent, useCallback, useEffect, MutableRefObject, FormEventHandler } from "react";
 import { DialogType, DialogContent, IDialogContentProps, IModalProps, Dialog, DialogFooter, DefaultButton, PrimaryButton, TextField } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { useForm, useFormContext, FormProvider, Controller, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
@@ -14,11 +14,6 @@ type PasswordChangeFormType = { currentPassword: string, newPassword: string, ne
 
 const modalProps: IModalProps = {
   isBlocking: true
-};
-
-const passwordChangeDialogProps: IDialogContentProps = {
-  type: DialogType.normal,
-  title: "Change password"
 };
 
 const passwordSetDialogProps: IDialogContentProps = {

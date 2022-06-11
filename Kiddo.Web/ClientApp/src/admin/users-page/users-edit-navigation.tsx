@@ -5,7 +5,6 @@ import { RouterCommandBarButton } from "../../common/router-link";
 import { GuidEmpty } from "../../api/constants";
 import { FunctionComponent } from "react";
 import { PolicyType, withRequiredPolicy } from "../../common/current-authorization";
-import { withRequiredProfile } from "../../common/current-profile";
 
 const navigationStyles = mergeStyleSets({
   navigatorLink: {
@@ -22,7 +21,7 @@ let UsersEditNavigation: FunctionComponent = () => {
   const userId = userIdStr == null ? GuidEmpty : userIdStr;
 
   // Don't show navigation panel for new users.
-  if (userId == GuidEmpty) {
+  if (userId === GuidEmpty) {
     return <></>;
   }
 

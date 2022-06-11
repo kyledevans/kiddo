@@ -1,11 +1,9 @@
 import { createContext, useState, Dispatch, SetStateAction, FunctionComponent, useEffect, useContext, ComponentType, useMemo } from "react";
-import { useHistory } from "react-router-dom";
 import { Text, mergeStyleSets } from "@fluentui/react";
 
 import { Api } from "../api/api";
 import { PolicySummary } from "../api/profile";
-import { AuthenticationManagerStateType } from "./authentication";
-import { useAuthenticationManagerState, useCurrentAuthenticationMethod, useIsAccessTokenReady } from "./authentication-react";
+import { useIsAccessTokenReady } from "./authentication-react";
 
 const pageStyles = mergeStyleSets({
   page: {
@@ -28,15 +26,6 @@ export enum PolicyType {
   User = "User",
   ReadOnlyUser = "ReadOnlyUser"
 }
-
-const defaultPolicies: PolicySummary = {
-  isAzureAd: false,
-  isAspNetIdentity: false,
-  isSuperAdministrator: false,
-  isAdministrator: false,
-  isUser: false,
-  isReadOnlyUser: false
-};
 
 const CurrentAuthorizationContextToken = createContext<CurrentPoliciesContextType>([null, () => { throw new Error("AppCurrentAuthorizationContextProvider has not been initialized.") }]);
 

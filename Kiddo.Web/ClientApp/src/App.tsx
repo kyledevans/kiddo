@@ -202,7 +202,7 @@ const ProfileCallout: FunctionComponent<{ target: Target, control: MutableRefObj
       history.push("/");
       window.location.reload();
     }
-  }, [authManager]);
+  }, [authManager, history]);
 
   useEffect(() => {
     control.current = {
