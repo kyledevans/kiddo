@@ -2,8 +2,7 @@ import { useCallback, FormEventHandler, useEffect } from "react";
 import { mergeStyleSets, IIconProps, PrimaryButton, TextField, Text } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { useForm, useFormContext, FormProvider, Controller, SubmitHandler, SubmitErrorHandler, UseFormSetValue, UseFormReset } from "react-hook-form";
-import { useHistory } from "react-router";
-import { History, LocationState } from "history";
+import { useNavigate } from "react-router";
 
 import { DirtyProvider, useDirtyReactHookForm } from "../common/dirty";
 import { useFormStateRefs } from "../common/hooks";
@@ -74,9 +73,10 @@ const icons: { backLoginIcon: IIconProps } = {
   backLoginIcon: { iconName: "Back" }
 };
 
-function useInitializeEffect(authManager: IAuthenticationManager | null, spaConfig: SpaConfiguration | null, authState: AuthenticationManagerStateType | null, setFormValue: UseFormSetValue<PageFormType>, showRegisterForm: () => void, history: History<LocationState>, reset: UseFormReset<PageFormType>) {
+function useInitializeEffect(authManager: IAuthenticationManager | null, spaConfig: SpaConfiguration | null, authState: AuthenticationManagerStateType | null, setFormValue: UseFormSetValue<PageFormType>, showRegisterForm: () => void, reset: UseFormReset<PageFormType>) {
   const snackbar = useSnackbar();
   const [me] = useCurrentProfile();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -98,11 +98,11 @@ function useInitializeEffect(authManager: IAuthenticationManager | null, spaConf
           // Newly registered.
           snackbar.open("Registered!");
           reset();
-          history.push("/");
+          navigate("/");
         } else if (registerResponse.statusCode === RegisterStatusCodeType.AlreadyRegistered) {
           // User is already registered.  Silently redirect them away from the login page.
           reset();
-          history.push("/");
+          navigate("/");
         } else if (registerResponse.statusCode === RegisterStatusCodeType.InvalidFields) {
           // The user needs to register, but some of their profile data doesn't pass validation.  Prompt to manually enter some details.
           setFormValue("email", registerResponse?.prefillData?.email ?? "");
@@ -113,7 +113,7 @@ function useInitializeEffect(authManager: IAuthenticationManager | null, spaConf
         }
       }
     })();
-  }, [authManager, spaConfig, authState, setFormValue, showRegisterForm, history, me, snackbar, reset]);
+  }, [authManager, spaConfig, authState, setFormValue, showRegisterForm, navigate, me, snackbar, reset]);
 }
 
 function LoginPageInner() {
@@ -124,9 +124,8 @@ function LoginPageInner() {
   const spaConfig = useSpaConfiguration();
   const authState = useAuthenticationManagerState();
   const [isRegisterFormVisible, { setTrue: showRegisterForm }] = useBoolean(false);
-  const history = useHistory();
 
-  useInitializeEffect(authManager, spaConfig, authState, setValue, showRegisterForm, history, reset);
+  useInitializeEffect(authManager, spaConfig, authState, setValue, showRegisterForm, reset);
 
   const onSubmitValid: SubmitHandler<PageFormType> = useCallback(async ({ displayName, email, givenName, surname }) => {
     if (authManager == null) throw new Error("authManager cannot be null.");

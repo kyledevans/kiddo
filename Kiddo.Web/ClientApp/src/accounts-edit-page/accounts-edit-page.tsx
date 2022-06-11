@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect, FormEvent, useRef, useMemo } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { IIconProps, Text, PrimaryButton, DefaultButton, TextField, Dialog, DialogFooter, mergeStyleSets, DialogType, IDialogContentProps, IModalProps, CommandBarButton } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { useForm, useFormContext, FormProvider, Controller, SubmitHandler, SubmitErrorHandler, useController } from "react-hook-form";
@@ -97,7 +97,7 @@ function AccountsEditPageInner() {
   const { accountId: accountIdStr } = useParams<{ accountId?: string | undefined }>();
   const [isDeleteDialogHidden, { setTrue: hideDeleteDialog, setFalse: showDeleteDialog }] = useBoolean(true);
   const [account, setAccount] = useState<Account | null>(null);
-  const history = useHistory();
+  const navigate = useNavigate();
   const isDirty = useDirtyReactHookForm();
   const accountId = parseIntStrict(accountIdStr, `Route parameter "accountId" must be an integer.`);
   const saveErrorDlg = useRef<ErrorCalloutControl | null>(null);
@@ -134,15 +134,15 @@ function AccountsEditPageInner() {
     reset({ name: saved.name, nameShort: saved.nameShort, description: saved.description ?? "" });
 
     if (account.accountId === 0) {
-      history.replace(`/manage/accounts/edit/${saved.accountId}`);
+      navigate(`/manage/accounts/edit/${saved.accountId}`, { replace: true });
     }
 
     setTimeout(() => {
-      history.push(`/manage/accounts`);
+      navigate(`/manage/accounts`);
     }, 0);
 
     snackbar.open(account.accountId === 0 ? `Created ${saved.name}.` : `Updated ${saved.name}.`);
-  }, [account, history, setAccount, reset, snackbar]);
+  }, [account, navigate, setAccount, reset, snackbar]);
 
   const onSubmitInvalid = useCallback<SubmitErrorHandler<PageFormType>>(() => {
     if (account == null) throw new Error("account cannot be null or undefined.");
@@ -160,14 +160,14 @@ function AccountsEditPageInner() {
       await Api.account.deleteAccounts([account.accountId]);
 
       setTimeout(() => {
-        history.push(`/manage/accounts`);
+        navigate(`/manage/accounts`);
       }, 0);
 
       snackbar.open(`Deleted ${account.name}.`);
     } finally {
       setDeleteUnlock();
     }
-  }, [account, history, snackbar, setDeleteLock, setDeleteUnlock, isSubmitting, isDeleteLocked]);
+  }, [account, navigate, snackbar, setDeleteLock, setDeleteUnlock, isSubmitting, isDeleteLocked]);
 
   const onSaveClick = useCallback(() => {
     // Don't try to save if there is currently a save or validation in progress.

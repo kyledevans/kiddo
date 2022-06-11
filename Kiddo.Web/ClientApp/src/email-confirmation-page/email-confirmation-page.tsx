@@ -7,7 +7,7 @@ import { useFormStateRefs } from "../common/hooks";
 import { useTitleEffect } from "../common/title";
 import { RouterPrimaryLinkButton } from "../common/router-link";
 import { Api } from "../api/api";
-import { useHistory, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useCurrentProfile } from "../common/current-profile";
 import { isNonEmptyString } from "../common/helper-functions";
 
@@ -145,7 +145,7 @@ const EmailConfirmationPage: FunctionComponent = () => {
 
   const [confirmState, setConfirmStateInternal] = useState<"confirm" | "success" | null>(null);
   const [me] = useCurrentProfile();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
@@ -156,13 +156,13 @@ const EmailConfirmationPage: FunctionComponent = () => {
 
   const setConfirmState = useCallback((newConfirmState: "confirm" | "success") => {
     if (newConfirmState === "success") {
-      history.replace("/email-confirmation?confirmState=success");
+      navigate("/email-confirmation?confirmState=success", { replace: true });
     } else {
-      history.push("/email-confirmation");
+      navigate("/email-confirmation");
       throw new Error("Token was lost on redirect");  // TODO: Preserve the confirmation token in this redirect.
     }
     setConfirmStateInternal(newConfirmState);
-  }, [setConfirmStateInternal, history]);
+  }, [setConfirmStateInternal, navigate]);
 
   useTitleEffect("Email Confirmation");
 

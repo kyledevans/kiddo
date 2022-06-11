@@ -1,7 +1,8 @@
 import { createContext, FunctionComponent, useEffect, useContext } from "react";
 import { useBoolean } from "@fluentui/react-hooks";
-import { useHistory } from "react-router-dom";
 import { useFormState } from "react-hook-form";
+
+import { usePrompt } from "./zzz-use-prompt-blocker";
 
 const DirtyToken = createContext<DirtyContext>({
   isDirty: false,
@@ -46,7 +47,6 @@ function onBeforeUnload(ev: BeforeUnloadEvent) {
 
 export const DirtyProvider: FunctionComponent = (props) => {
   const [isDirty, { setTrue: setDirty, setFalse: setNotDirty }] = useBoolean(false);
-  const history = useHistory();
 
   // Prompt the user if they attempt to navigate away using the address bar.
   useEffect(() => {
@@ -60,17 +60,7 @@ export const DirtyProvider: FunctionComponent = (props) => {
   }, [isDirty]);
 
   // Prompt the user if they attempt to navigate away using a form of react routing.  Ex: Clicking on a react router link.
-  useEffect(() => {
-    if (isDirty) {
-      const removeListener = history.block((_l, action) => {
-        if (action === "PUSH") {
-          return "Changes you made will not be saved.";
-        }
-      });
-
-      return removeListener;
-    }
-  }, [isDirty, history]);
+  usePrompt("Changes you made will not be saved.", isDirty);
 
   const newContext: DirtyContext = {
     isDirty,

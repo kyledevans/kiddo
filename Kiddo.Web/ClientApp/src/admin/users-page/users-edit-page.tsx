@@ -1,5 +1,5 @@
 import { FunctionComponent, useCallback, useState, useEffect, useRef, useMemo } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { mergeStyleSets, IIconProps, DefaultButton, PrimaryButton, Dialog, DialogFooter, IDialogContentProps, DialogType, IModalProps, TextField, Dropdown, IDropdownOption, CommandBarButton } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { useForm, useFormContext, FormProvider, Controller, SubmitHandler, SubmitErrorHandler, useController } from "react-hook-form";
@@ -151,7 +151,7 @@ const UsersEditPageInner: FunctionComponent<{ user: User, setUser: (newUser: Use
   const { reset } = useFormContext<PageFormType>();
   const [isDeleteLocked, setDeleteLock, setDeleteUnlock] = useAsyncLock(false);
   const snackbar = useSnackbar();
-  const history = useHistory();
+  const navigate = useNavigate();
   const saveErrorDlg = useRef<ErrorCalloutControl | null>(null);
   const isDirty = useDirtyReactHookForm();
 
@@ -169,14 +169,14 @@ const UsersEditPageInner: FunctionComponent<{ user: User, setUser: (newUser: Use
       await Api.user.deleteUsers([user.userId]);
 
       setTimeout(() => {
-        history.push(`/admin/users`);
+        navigate(`/admin/users`);
       }, 0);
 
       snackbar.open(`Deleted ${user.displayName}.`);
     } finally {
       setDeleteUnlock();
     }
-  }, [user, history, snackbar, setDeleteLock, setDeleteUnlock, isSubmitting, isDeleteLocked]);
+  }, [user, navigate, snackbar, setDeleteLock, setDeleteUnlock, isSubmitting, isDeleteLocked]);
 
   const onSubmitValid = useCallback<SubmitHandler<PageFormType>>(async ({ givenName, surname, displayName, email, securityRole }) => {
     if (user == null) throw new Error("user cannot be null or undefined.");
@@ -193,15 +193,15 @@ const UsersEditPageInner: FunctionComponent<{ user: User, setUser: (newUser: Use
     reset({ givenName: saved.givenName ?? "", surname: saved.surname ?? "", displayName: saved.displayName, email: saved.email ?? "", securityRole: saved.securityRole });
 
     if (user.userId === GuidEmpty) {
-      history.replace(`/admin/users/edit/${saved.userId}`);
+      navigate(`/admin/users/edit/${saved.userId}`, { replace: true });
     }
 
     setTimeout(() => {
-      history.push(`/admin/users`);
+      navigate(`/admin/users`);
     }, 0);
 
     snackbar.open(user.userId === GuidEmpty ? `Created ${saved.displayName}.` : `Updated ${saved.displayName}.`);
-  }, [user, history, setUser, reset, snackbar]);
+  }, [user, navigate, setUser, reset, snackbar]);
 
   const onSubmitInvalid = useCallback<SubmitErrorHandler<PageFormType>>(() => {
     if (user == null) throw new Error("user cannot be null or undefined.");

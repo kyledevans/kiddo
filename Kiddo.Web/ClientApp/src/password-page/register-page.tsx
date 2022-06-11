@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect, ReactElement, FunctionComponent, useRef } from "react";
 import { mergeStyleSets, IIconProps, PrimaryButton, TextField, Text, Spinner } from "@fluentui/react";
 import { useForm, useFormContext, FormProvider, Controller, SubmitHandler } from "react-hook-form";
-import { useHistory, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { DirtyProvider, useDirtyReactHookForm } from "../common/dirty";
 import { DebounceValidator, useDebouncedValidator, usePasswordValidators, useReactHookFormSubmitHandlers } from "../common/hooks";
@@ -79,7 +79,7 @@ const icons: { backLoginIcon: IIconProps, checkmark: IIconProps } = {
 const RegisterPageInner: FunctionComponent<{ setRegisterState: (newRegisterState: "register" | "success") => void }> = ({ setRegisterState }) => {
   const isDirty = useDirtyReactHookForm();
   const { reset: resetForm, setError } = useFormContext<PageFormType>();
-  const history = useHistory();
+  const navigate = useNavigate();
   const authManager = useAuthenticationManager();
   const [rules, setRules] = useState<PasswordValidationRules | null>(null);
   const { passwordValidator, confirmPasswordValidator } = usePasswordValidators<PageFormType>(rules, "password");
@@ -99,13 +99,13 @@ const RegisterPageInner: FunctionComponent<{ setRegisterState: (newRegisterState
     let response = await authenticator.register(email, password, displayName, givenName, surname);
     if (response.success && response.authenticateResponse != null) {
       resetForm();
-      history.push("/");
+      navigate("/");
       window.setTimeout(() => { window.location.reload(); });
     } else if (response.success) {
       resetForm();
       setRegisterState("success");
     }
-  }, [authManager, resetForm, history, setRegisterState]);
+  }, [authManager, resetForm, navigate, setRegisterState]);
 
   const onSubmit = useReactHookFormSubmitHandlers(onSubmitValid);
 
@@ -181,7 +181,7 @@ const RegisterPage: FunctionComponent = () => {
 
   const [registerState, setRegisterStateInternal] = useState<"register" | "success" | null>(null);
   const [me] = useCurrentProfile();
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
@@ -192,20 +192,20 @@ const RegisterPage: FunctionComponent = () => {
 
   const setRegisterState = useCallback((newRegisterState: "register" | "success") => {
     if (newRegisterState === "success") {
-      history.replace("/password-register?registerState=success");
+      navigate("/password-register?registerState=success", { replace: true })
     } else {
-      history.push("/password-register");
+      navigate("/password-register");
     }
     setRegisterStateInternal(newRegisterState);
-  }, [setRegisterStateInternal, history]);
+  }, [setRegisterStateInternal, navigate]);
 
   useTitleEffect("Register");
 
   useEffect(() => {
     if (me != null && me !== "Anonymous" && me !== "Unregistered") {
-      history.push("/");
+      navigate("/");
     }
-  }, [me, history]);
+  }, [me, navigate]);
 
   let displayContents: ReactElement;
 

@@ -1,5 +1,5 @@
 import { Suspense, useEffect, lazy, FunctionComponent, MouseEvent, useCallback, MutableRefObject, useRef } from "react";
-import { Route, Switch, useHistory, useLocation, BrowserRouter as Router, RouteProps } from "react-router-dom";
+import { Route, Routes, useNavigate, useLocation, BrowserRouter as Router, RouteProps } from "react-router-dom";
 import { Callout, ActionButton, IconButton, ThemeProvider, Panel, Text, PanelType, IPanelStyles, IPanelStyleProps, IStyleFunctionOrObject, mergeStyleSets, IIconProps, Customizer, ISettings, LayerHost, Target } from "@fluentui/react";
 import { useBoolean } from "@fluentui/react-hooks";
 import { DndProvider } from "react-dnd";
@@ -43,7 +43,7 @@ interface AppRouteProps extends RouteProps {
 }
 
 const routes: AppRouteProps[] = [
-  { path: "/", exact: true, children: (<Suspense fallback={(<></>)}><DefaultPage /></Suspense>) },
+  { path: "/", children: (<Suspense fallback={(<></>)}><DefaultPage /></Suspense>) },
   { path: "/about", children: (<Suspense fallback={(<></>)}><AboutPage /></Suspense>) },
   { path: "/accounts/:accountId/entries", children: (<Suspense fallback={(<></>)}><AccountsEntriesPage /></Suspense>) },
   { path: "/accounts", children: (<Suspense fallback={(<></>)}><AccountsPage /></Suspense>) },
@@ -145,7 +145,7 @@ const scopedSettings: ISettings = {
 };
 
 const NavLink: FunctionComponent<{ to: string, iconProps?: IIconProps | undefined }> = ({ to, iconProps, children }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // Handle normal link clicks by using the react router to navigate, otherwise clicking on an <a> tag will cause a full page load.
   // This enables SPA navigation while retaining the ability for the user to right click an <a> element and "Open Link in New Tab".
@@ -154,9 +154,9 @@ const NavLink: FunctionComponent<{ to: string, iconProps?: IIconProps | undefine
 
     if (typeof href === "string") {
       e.preventDefault();
-      history.push(href);
+      navigate(href);
     }
-  }, [history]);
+  }, [navigate]);
 
   return (
     <ActionButton href={to} onClick={navLinkClick} iconProps={iconProps}>{children}</ActionButton>
@@ -194,15 +194,15 @@ const ProfileCallout: FunctionComponent<{ target: Target, control: MutableRefObj
   const [isVisible, { setTrue: setIsVisible, setFalse: setIsHidden }] = useBoolean(false);
   //const onLogoutClick = useLogoutCallback();
   const authManager = useAuthenticationManager();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const onLogoutClick = useCallback(async () => {
     if (authManager != null) {
       await authManager.logout();
-      history.push("/");
+      navigate("/");
       window.location.reload();
     }
-  }, [authManager, history]);
+  }, [authManager, navigate]);
 
   useEffect(() => {
     control.current = {
@@ -248,20 +248,18 @@ function AppInner() {
         <NavPanel isOpen={isOpen} dismissPanel={dismissPanel} />
       </>) : null}
       <ThemeProvider theme={AppTheme} className={appStyles.navigationRouterOutput}>
-        <Switch>
+        <Routes>
           {routes.map((route, index) => (
-            <Route key={index} path={route.path} exact={route.exact}>
-              {route.navigation == null ? (<></>) : (<div className={appStyles.navigationLinksContainer}>{route.navigation}</div>)}
-            </Route>
+            <Route key={index} path={route.path!} element={route.navigation == null ? (<></>) : (<div className={appStyles.navigationLinksContainer}>{route.navigation}</div>)} />
           ))}
-        </Switch>
+        </Routes>
       </ThemeProvider>
       <ThemeProvider theme={AppTheme} className={appStyles.primaryRouterOutput}>
-        <Switch>
+        <Routes>
           {routes.map((route, index) => (
-            <Route key={index} path={route.path} exact={route.exact} children={route.children} />
+            <Route key={index} path={route.path!} element={route.children} />
           ))}
-        </Switch>
+        </Routes>
       </ThemeProvider>
     </div>
   );

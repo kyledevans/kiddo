@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 
 import { useTitleEffect } from "../common/title";
 import { useCurrentProfile } from "../common/current-profile";
 
 export default function DefaultPage() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [me] = useCurrentProfile();
 
   useTitleEffect(null);
 
   useEffect(() => {
     if (me === "Anonymous" || me === "Unregistered") {
-      history.push("/authentication");
+      navigate("/authentication");
     } else if (me != null) {
-      history.push("/accounts");
+      navigate("/accounts");
     }
-  }, [history, me]);
+  }, [navigate, me]);
 
   return (
     <div></div>
