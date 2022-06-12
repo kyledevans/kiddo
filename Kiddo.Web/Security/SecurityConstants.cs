@@ -9,6 +9,11 @@ public static class SecurityConstants
         public const string AzureAd = "AzureAd";
     }
 
+    public static class Scopes
+    {
+        public const string KiddoAccess = "Kiddo.Access";
+    }
+
     public static class Policy
     {
         /// <summary>

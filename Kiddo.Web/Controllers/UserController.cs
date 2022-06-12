@@ -7,7 +7,6 @@ using Microsoft.Identity.Web.Resource;
 
 [ApiController]
 [Route("api/[controller]")]
-[RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
 [Security.EmailRequired]
 public class UserController : ControllerBase
 {

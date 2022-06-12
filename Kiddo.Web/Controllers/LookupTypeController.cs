@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
-[RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
 [Security.EmailRequired]
 public class LookupTypeController : ControllerBase
 {

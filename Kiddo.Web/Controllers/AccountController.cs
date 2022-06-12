@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
-[RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]  // TODO: This needs to be adjusted to work with ASP Net Core Identity.
 [Security.EmailRequired]
 public class AccountController : ControllerBase
 {

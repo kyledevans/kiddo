@@ -1,5 +1,6 @@
 ﻿namespace Kiddo.Web.Security;
 
+using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -22,7 +23,10 @@ public class JwtUtils : IJwtUtils
             Audience = SecurityConstants.AspNetIdentity.RefreshTokenAudience,
             Issuer = SecurityConstants.AspNetIdentity.Issuer,
             Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha512Signature)
+            SigningCredentials = new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha512Signature),
+            Claims = new Dictionary<string, object>() {
+                { ClaimConstants.Scope, new string[] { SecurityConstants.Scopes.KiddoAccess } }
+            }
         };
         SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
@@ -73,7 +77,10 @@ public class JwtUtils : IJwtUtils
             Audience = SecurityConstants.AspNetIdentity.AccessTokenAudience,
             Issuer = SecurityConstants.AspNetIdentity.Issuer,
             Expires = DateTime.UtcNow.AddHours(1),
-            SigningCredentials = new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha512Signature)
+            SigningCredentials = new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha512Signature),
+            Claims = new Dictionary<string, object>() {
+                { ClaimConstants.Scope, new string[] { SecurityConstants.Scopes.KiddoAccess } }
+            }
         };
         SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);

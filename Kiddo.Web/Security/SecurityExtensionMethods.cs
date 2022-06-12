@@ -128,12 +128,14 @@ public static class SecurityExtensionMethods
             // Policy for either aspnet identity tokens (both refresh and access).
             options.AddPolicy(SecurityConstants.Policy.AspNetIdentity, policy => {
                 policy.RequireAuthenticatedUser()
+                    .RequireScope(SecurityConstants.Scopes.KiddoAccess)
                     .AddAuthenticationSchemes(SecurityConstants.Scheme.AspNetIdentity)
                     .RequireClaim(SecurityConstants.ClaimType.Issuer, SecurityConstants.AspNetIdentity.Issuer);
             });
             // Policy for just aspnet identity access tokens.
             options.AddPolicy(SecurityConstants.Policy.AspNetIdentityAccess, policy => {
                 policy.RequireAuthenticatedUser()
+                    .RequireScope(SecurityConstants.Scopes.KiddoAccess)
                     .AddAuthenticationSchemes(SecurityConstants.Scheme.AspNetIdentity)
                     .RequireClaim(SecurityConstants.ClaimType.Issuer, SecurityConstants.AspNetIdentity.Issuer)
                     .RequireClaim(SecurityConstants.ClaimType.Audience, SecurityConstants.AspNetIdentity.AccessTokenAudience);
@@ -141,6 +143,7 @@ public static class SecurityExtensionMethods
             // Policy for just aspnet identity refresh tokens.
             options.AddPolicy(SecurityConstants.Policy.AspNetIdentityRefresh, policy => {
                 policy.RequireAuthenticatedUser()
+                    .RequireScope(SecurityConstants.Scopes.KiddoAccess)
                     .AddAuthenticationSchemes(SecurityConstants.Scheme.AspNetIdentity)
                     .RequireClaim(SecurityConstants.ClaimType.Issuer, SecurityConstants.AspNetIdentity.Issuer)
                     .RequireClaim(SecurityConstants.ClaimType.Audience, SecurityConstants.AspNetIdentity.RefreshTokenAudience);
@@ -148,6 +151,7 @@ public static class SecurityExtensionMethods
             // Policy for Azure Ad authentication.
             options.AddPolicy(SecurityConstants.Policy.AzureAd, policy => {
                 policy.RequireAuthenticatedUser()
+                    .RequireScope(SecurityConstants.Scopes.KiddoAccess)
                     .AddAuthenticationSchemes(SecurityConstants.Scheme.AzureAd)
                     .RequireAssertion(handler => {
                         // TODO: Probably need to figure out why AddAuthenticationSchemes() isn't working.
@@ -159,10 +163,10 @@ public static class SecurityExtensionMethods
                         return false;
                     });
             });
-            options.AddPolicy(SecurityConstants.Policy.SuperAdministrator, p => { p.RequireAuthenticatedUser().RequireRole(new string[] { nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator) }); });
-            options.AddPolicy(SecurityConstants.Policy.Administrator, p => { p.RequireAuthenticatedUser().RequireRole(new string[] { nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator), nameof(Kiddo.Constants.SecurityRoleType.Administrator) }); });
-            options.AddPolicy(SecurityConstants.Policy.User, p => { p.RequireAuthenticatedUser().RequireRole(new string[] { nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator), nameof(Kiddo.Constants.SecurityRoleType.Administrator), nameof(Kiddo.Constants.SecurityRoleType.User) }); });
-            options.AddPolicy(SecurityConstants.Policy.ReadOnlyUser, p => { p.RequireAuthenticatedUser().RequireRole(new string[] { nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator), nameof(Kiddo.Constants.SecurityRoleType.Administrator), nameof(Kiddo.Constants.SecurityRoleType.User), nameof(Kiddo.Constants.SecurityRoleType.ReadOnlyUser) }); });
+            options.AddPolicy(SecurityConstants.Policy.SuperAdministrator, p => { p.RequireAuthenticatedUser().RequireScope(SecurityConstants.Scopes.KiddoAccess).RequireRole(new string[] { nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator) }); });
+            options.AddPolicy(SecurityConstants.Policy.Administrator, p => { p.RequireAuthenticatedUser().RequireScope(SecurityConstants.Scopes.KiddoAccess).RequireRole(new string[] { nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator), nameof(Kiddo.Constants.SecurityRoleType.Administrator) }); });
+            options.AddPolicy(SecurityConstants.Policy.User, p => { p.RequireAuthenticatedUser().RequireScope(SecurityConstants.Scopes.KiddoAccess).RequireRole(new string[] { nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator), nameof(Kiddo.Constants.SecurityRoleType.Administrator), nameof(Kiddo.Constants.SecurityRoleType.User) }); });
+            options.AddPolicy(SecurityConstants.Policy.ReadOnlyUser, p => { p.RequireAuthenticatedUser().RequireScope(SecurityConstants.Scopes.KiddoAccess).RequireRole(new string[] { nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator), nameof(Kiddo.Constants.SecurityRoleType.Administrator), nameof(Kiddo.Constants.SecurityRoleType.User), nameof(Kiddo.Constants.SecurityRoleType.ReadOnlyUser) }); });
         });
     }
 }

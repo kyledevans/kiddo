@@ -6,7 +6,6 @@ using Microsoft.Identity.Web.Resource;
 
 [ApiController]
 [Route("api/[controller]")]
-[RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
 public class ProfileController : ControllerBase
 {
     private Models.ProfileModel ProfileModel { get; set; }

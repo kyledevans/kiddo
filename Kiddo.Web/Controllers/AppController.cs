@@ -23,7 +23,6 @@ public class AppController : ControllerBase
     }
 
     [HttpGet("GetApplicationInfo")]
-    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
     public async Task<ActionResult<ApplicationInfo>> GetApplicationInfo()
     {
         ApplicationInfo retval = await AppModel.GetApplicationInfo().ConfigureAwait(false);

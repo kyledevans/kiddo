@@ -3,11 +3,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Kiddo.WebContract.Entry;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web.Resource;
 
 [ApiController]
 [Route("api/[controller]")]
-[RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
 [Security.EmailRequired]
 public class EntryController : ControllerBase
 {
