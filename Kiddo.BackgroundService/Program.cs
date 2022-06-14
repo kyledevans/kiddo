@@ -2,6 +2,7 @@ using Serilog;
 using Kiddo.DAL.DependencyInjection;
 using Kiddo.Utility.DependencyInjection;
 using Kiddo.BackgroundService.DependencyInjection;
+using Prometheus;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -26,7 +27,8 @@ try
 
     builder.Services.AddHealthChecks()
         .AddCustomDbContextChecks()
-        .AddSerialDispatchServiceHealthChecks();
+        .AddSerialDispatchServiceHealthChecks()
+        .ForwardToPrometheus(); // Expose health check metrics to Prometheus.;
 
     builder.Services.AddCustomDAL(builder.Configuration);
     builder.Services.AddSerialDispatchService("Kiddo.BackgroundService.Dispatch");
@@ -41,6 +43,7 @@ try
     app.UseSerilogRequestLogging();
     app.UseCustomSwagger(app.Environment);
     app.UseRouting();
+    app.UseHttpMetrics();
     app.MapControllers();
 
     app.UseEndpoints(endpoints => {
@@ -54,6 +57,8 @@ try
         endpoints.MapHealthChecks("/health/readiness", new() {
             Predicate = healthCheck => healthCheck.Tags.Contains("readiness")
         });
+
+        endpoints.MapMetrics();
     });
 
     app.Run();
