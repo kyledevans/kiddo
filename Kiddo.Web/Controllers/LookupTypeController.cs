@@ -23,7 +23,7 @@ public class LookupTypeController : ControllerBase
     /// <param name="lookupTypeId"></param>
     /// <returns></returns>
     [HttpGet]
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.ReadOnlyUser))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     public async Task<ActionResult<LookupType>> GetLookupType(int lookupTypeId)
     {
         LookupType type = await LookupTypeModel.GetLookupType(lookupTypeId).ConfigureAwait(false);
@@ -31,7 +31,7 @@ public class LookupTypeController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
     public async Task<ActionResult<LookupType>> UpdateLookupType(LookupType lookupType)
     {
         // TODO: This needs to handle Foreign Key constraint exceptions.

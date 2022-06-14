@@ -33,6 +33,7 @@ try
     builder.Services.AddCustomDAL(builder.Configuration);
     builder.Services.AddSerialDispatchService("Kiddo.BackgroundService.Dispatch");
     builder.Services.AddCustomModels();
+    builder.Services.AddCustomUserManagement(builder.Configuration);
 
     #endregion
 

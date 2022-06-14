@@ -25,7 +25,8 @@ try
     builder.Services.AddControllers();
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddCustomSwagger();
-    builder.Services.AddCustomSecurity(builder.Configuration);
+    builder.Services.AddCustomAuthentication(builder.Configuration);
+    builder.Services.AddCustomAuthorization(builder.Configuration);
 
     builder.Services.AddHealthChecks()
         .AddCustomDbContextChecks()

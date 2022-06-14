@@ -18,7 +18,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("SearchUsers")]
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
     public async Task<ActionResult<SearchUsersResult>> SearchUsers()
     {
         SearchUsersResult retval = await UserModel.SearchUsers(1000).ConfigureAwait(false);
@@ -26,7 +26,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
     public async Task<ActionResult<User>> GetUser(Guid userId)
     {
         User user = await UserModel.GetUser(userId).ConfigureAwait(false);
@@ -34,7 +34,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
     public async Task<ActionResult<User>> CreateUser(User newUser)
     {
         User user = await UserModel.CreateUser(newUser).ConfigureAwait(false);
@@ -42,7 +42,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
     public async Task<ActionResult<User>> UpdateUser(User updateUser)
     {
         User user = await UserModel.UpdateUser(updateUser).ConfigureAwait(false);
@@ -50,7 +50,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("DeleteUsers")]
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
     public async Task<ActionResult> DeleteUsers(List<Guid> userIds)
     {
         // TODO: This needs to handle Foreign Key constraint exceptions.

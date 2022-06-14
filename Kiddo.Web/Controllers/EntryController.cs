@@ -17,7 +17,7 @@ public class EntryController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Policy = nameof(Constants.SecurityRoleType.ReadOnlyUser))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     public async Task<ActionResult<Entry>> GetEntry(int entryId)
     {
         Entry entry = await EntryModel.GetEntry(entryId).ConfigureAwait(false);
@@ -25,7 +25,7 @@ public class EntryController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize(Policy = nameof(Constants.SecurityRoleType.User))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.User)]
     public async Task<ActionResult<Entry>> CreateEntry(Entry newEntry)
     {
         Entry entry = await EntryModel.CreateEntry(newEntry).ConfigureAwait(false);
@@ -33,7 +33,7 @@ public class EntryController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = nameof(Constants.SecurityRoleType.User))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.User)]
     public async Task<ActionResult<Entry>> UpdateEntry(Entry updateEntry)
     {
         Entry entry = await EntryModel.UpdateEntry(updateEntry).ConfigureAwait(false);
@@ -41,7 +41,7 @@ public class EntryController : ControllerBase
     }
 
     [HttpPost("DeleteEntries")]
-    [Authorize(Policy = nameof(Constants.SecurityRoleType.User))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.User)]
     public async Task<ActionResult> DeleteEntries(List<int> entryIds)
     {
         // TODO: This needs to handle Foreign Key exceptions.

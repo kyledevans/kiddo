@@ -18,7 +18,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Policy = nameof(Constants.SecurityRoleType.ReadOnlyUser))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     public async Task<ActionResult<Account>> GetAccount(int accountId)
     {
         Account? account = await AccountModel.GetAccount(accountId).ConfigureAwait(false);
@@ -32,7 +32,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet("SearchAccounts")]
-    [Authorize(Policy = nameof(Constants.SecurityRoleType.ReadOnlyUser))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     public async Task<ActionResult<List<SearchAccountResult>>> SearchAccounts()
     {
         List<SearchAccountResult> results = await AccountModel.SearchAccounts().ConfigureAwait(false);
@@ -40,7 +40,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPut]
-    [Authorize(Policy = nameof(Constants.SecurityRoleType.Administrator))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.Administrator)]
     public async Task<ActionResult<Account>> CreateAccount(Account newAccount)
     {
         Account result = await AccountModel.CreateAccount(newAccount).ConfigureAwait(false);
@@ -48,7 +48,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = nameof(Constants.SecurityRoleType.Administrator))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.Administrator)]
     public async Task<ActionResult<Account>> UpdateAccount(Account update)
     {
         Account? result = await AccountModel.UpdateAccount(update).ConfigureAwait(false);
@@ -62,7 +62,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("DeleteAccounts")]
-    [Authorize(Policy = nameof(Constants.SecurityRoleType.Administrator))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.Administrator)]
     public async Task<ActionResult> DeleteAccounts(List<int> accountIds)
     {
         await AccountModel.DeleteAccounts(accountIds).ConfigureAwait(false);

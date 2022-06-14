@@ -151,7 +151,7 @@ public static class WebServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddCustomSecurity(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         // Dependencies on other services.
         services.AddOptions()
@@ -205,7 +205,6 @@ public static class WebServiceCollectionExtensions
 
         AuthenticationBuilder authBuilder = services.AddAuthentication(SecurityConstants.Scheme.Selector)
             .AddScheme<PolicySchemeOptions, PolicySchemeHandler>(SecurityConstants.Scheme.Selector, SecurityConstants.Scheme.Selector, null)
-            //.AddScheme<JwtBearerOptions, SchemeEnabledJwtBearerHandler>(SecurityConstants.Scheme.AzureAd, SecurityConstants.Scheme.AzureAd, null)
             .AddScheme<JwtBearerOptions, SchemeEnabledJwtBearerHandler>(SecurityConstants.Scheme.AspNetIdentity, SecurityConstants.Scheme.AspNetIdentity, null);
 
         authBuilder.AddMicrosoftIdentityWebApi(configuration.GetSection(SecurityConstants.AzureAd.ApiAzureAdOptions), SecurityConstants.Scheme.AzureAd)
@@ -251,6 +250,11 @@ public static class WebServiceCollectionExtensions
                 };
             });
 
+        return services;
+    }
+
+    public static IServiceCollection AddCustomAuthorization(this IServiceCollection services, IConfiguration configuration)
+    {
         // Add authorization policies
         services.AddAuthorization(options => {
             // Policy for either aspnet identity tokens (both refresh and access).

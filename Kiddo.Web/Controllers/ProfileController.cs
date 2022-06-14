@@ -24,7 +24,7 @@ public class ProfileController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.ReadOnlyUser))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     public async Task<ActionResult<WebContract.Profile.Profile>> UpdateProfile(WebContract.Profile.Profile update)
     {
         WebContract.Profile.Profile retval = await ProfileModel.UpdateProfile(update).ConfigureAwait(false);

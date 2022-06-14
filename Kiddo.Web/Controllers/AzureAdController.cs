@@ -49,8 +49,7 @@ public class AzureAdController : ControllerBase
     /// </summary>
     /// <param name="linkRequest"></param>
     /// <returns></returns>
-    //[Authorize(Policy = Security.SecurityConstants.Policy.AzureAd)]
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.ReadOnlyUser))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     [HttpPost("LinkToExisting")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
     [Security.EmailRequired]
@@ -60,7 +59,7 @@ public class AzureAdController : ControllerBase
         return response;
     }
 
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.ReadOnlyUser))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     [HttpPost("RemoveLink")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
     [Security.EmailRequired]
@@ -70,7 +69,7 @@ public class AzureAdController : ControllerBase
         return Ok();
     }
 
-    [Authorize(Policy = nameof(Kiddo.Constants.SecurityRoleType.ReadOnlyUser))]
+    [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     [HttpGet("GetAccountLinks")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
     public async Task<ActionResult<List<AccountLink>>> GetAccountLinks()
