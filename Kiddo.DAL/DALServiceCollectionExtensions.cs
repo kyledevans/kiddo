@@ -1,11 +1,9 @@
-﻿namespace Kiddo.DAL;
+﻿namespace Kiddo.DAL.DependencyInjection;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 
-public static class DependencyInjection
+public static class DALServiceCollectionExtensions
 {
     public static void AddCustomDAL(this IServiceCollection services, IConfiguration configuration)
     {

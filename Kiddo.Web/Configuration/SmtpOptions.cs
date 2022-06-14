@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web;
+﻿namespace Kiddo.Web.Configuration;
 
 #nullable enable annotations
 

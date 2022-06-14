@@ -1,5 +1,6 @@
 ﻿namespace Kiddo.Web.Models;
 
+using Kiddo.Web.Configuration;
 using Microsoft.Extensions.Options;
 using MimeKit;
 

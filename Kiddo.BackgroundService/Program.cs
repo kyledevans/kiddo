@@ -1,6 +1,7 @@
 using Serilog;
-using Kiddo.DAL;
-using Kiddo.Utility.SerialDispatchService;
+using Kiddo.DAL.DependencyInjection;
+using Kiddo.Utility.DependencyInjection;
+using Kiddo.BackgroundService.DependencyInjection;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -19,37 +20,17 @@ try
         .WriteTo.Console()
         .ReadFrom.Configuration(ctx.Configuration));
 
-    // Add ASP features
     builder.Services.AddControllers();
     builder.Services.AddHttpContextAccessor();
+    builder.Services.AddCustomSwagger();
 
-    // Add Swagger
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(config => {
-        /* Note: The following lines require that the *.csproj file be modified to have the following 2 settings:
-           <GenerateDocumentationFile>true</GenerateDocumentationFile>
-           <NoWarn>$(NoWarn);1591</NoWarn>
-         * 
-         * These need to be placed within the <PropertyGroup> node (it's near the top).
-         */
-
-        // Set the comments path for the Swagger JSON and UI.
-        string xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-        string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-        config.IncludeXmlComments(xmlPath);
-    });
-
-    // Add health checks
     builder.Services.AddHealthChecks()
-        .AddDbContextCheck<KiddoDbContextExtended>("kiddodb", Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded, new string[] { "readiness" })
+        .AddCustomDbContextChecks()
         .AddSerialDispatchServiceHealthChecks();
 
-    // Add implementations for backend abstractions
     builder.Services.AddCustomDAL(builder.Configuration);
     builder.Services.AddSerialDispatchService("Kiddo.BackgroundService.Dispatch");
-
-    // Add models
-    builder.Services.AddScoped<Kiddo.BackgroundService.Models.ServiceModel>();
+    builder.Services.AddCustomModels();
 
     #endregion
 
@@ -58,14 +39,7 @@ try
     #region Request pipeline
 
     app.UseSerilogRequestLogging();
-
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
-
+    app.UseCustomSwagger(app.Environment);
     app.UseRouting();
     app.MapControllers();
 

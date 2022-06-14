@@ -1,7 +1,26 @@
-﻿namespace Kiddo.Web.Security;
+﻿namespace Kiddo.Web;
 
-public static class ApplicationBuilderExtensions
+using Kiddo.Web.Security;
+
+public static class WebApplicationBuilderExtensions
 {
+    /// <summary>
+    /// Adds Swagger UI to the application.  This needs to be early in the request pipeline.  BEFORE any calls to UseStaticFiles().
+    /// </summary>
+    /// <param name="app"></param>
+    /// <param name="environment"></param>
+    /// <returns></returns>
+    public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app, IWebHostEnvironment environment)
+    {
+        if (environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        return app;
+    }
+
     /// <summary>
     /// Add middleware that will block access to endpoints that require a particular authentication method
     /// to be enabled in appsettings.json.  This needs to be placed in the middleware pipeline just BEFORE

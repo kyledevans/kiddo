@@ -1,9 +1,9 @@
-﻿namespace Kiddo.Utility.SerialDispatchService;
+﻿namespace Kiddo.Utility.DependencyInjection;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Kiddo.Utility.SerialDispatchService;
 
-public static class ExtensionMethods
+public static class UtilityServiceCollectionExtensions
 {
     /// <summary>
     /// Add a serial dispatch queue background service.  To write jobs to the queue use the <see cref="IDispatchQueue"/> interface.
@@ -33,18 +33,5 @@ public static class ExtensionMethods
                 return dispatchService;
             }
         });
-    }
-
-    public static IHealthChecksBuilder AddSerialDispatchServiceHealthChecks(this IHealthChecksBuilder builder)
-    {
-        builder.Services.AddSingleton<SerialDispatchServiceHealthCheckLiveness>();
-        builder.Services.AddSingleton<SerialDispatchServiceHealthCheckReadiness>();
-        builder.Services.AddSingleton<SerialDispatchServiceHealthCheckStartup>();
-        builder
-            .AddCheck<SerialDispatchServiceHealthCheckLiveness>($"{nameof(SerialDispatchService)}.liveness", HealthStatus.Unhealthy, new string[] { "liveness", $"{nameof(SerialDispatchService)}" })
-            .AddCheck<SerialDispatchServiceHealthCheckReadiness>($"{nameof(SerialDispatchService)}.readiness", HealthStatus.Unhealthy, new string[] { "readiness", $"{nameof(SerialDispatchService)}" })
-            .AddCheck<SerialDispatchServiceHealthCheckStartup>($"{nameof(SerialDispatchService)}.startup", HealthStatus.Unhealthy, new string[] { "startup", $"{nameof(SerialDispatchService)}" });
-
-        return builder;
     }
 }

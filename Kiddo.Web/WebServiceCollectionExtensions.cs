@@ -1,29 +1,157 @@
-﻿namespace Kiddo.Web.Security;
+﻿namespace Kiddo.Web.DependencyInjection;
 
-using Microsoft.Identity.Web;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
-using Microsoft.OpenApi.Models;
-using Serilog;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using Microsoft.Graph.ExternalConnectors;
-using Microsoft.Extensions.Configuration;
-using System.Security.Claims;
 using Microsoft.Identity.Client;
-using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using Microsoft.Graph;
-using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
+using Microsoft.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Kiddo.Web.Configuration;
+using Kiddo.Web.Security;
+using Microsoft.OpenApi.Models;
 
-public static class SecurityExtensionMethods
+public static class WebServiceCollectionExtensions
 {
-    public static void AddCustomSecurity(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
+    {
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(config => {
+            /* Note: The following lines require that the *.csproj file be modified to have the following 2 settings:
+               <GenerateDocumentationFile>true</GenerateDocumentationFile>
+               <NoWarn>$(NoWarn);1591</NoWarn>
+             * 
+             * These need to be placed within the <PropertyGroup> node (it's near the top).
+             */
+
+            // Set the comments path for the Swagger JSON and UI.
+            string xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            config.IncludeXmlComments(xmlPath);
+
+            config.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new() {
+                In = ParameterLocation.Header,
+                Description = "Please enter token",
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = JwtBearerDefaults.AuthenticationScheme
+            });
+            config.AddSecurityRequirement(new()
+            {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new()
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = JwtBearerDefaults.AuthenticationScheme
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+            config.CustomSchemaIds(type => type.ToString());
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddCustomSpaOptions(this IServiceCollection services)
+    {
+        // TODO: This could use some more forgiving parse logic, and more detailed error logging.
+
+        services.AddOptions<SpaOptions>()
+            //.Bind(configuration.GetSection("Spa"))
+            .BindConfiguration("Spa");
+
+        return services;
+
+        /*SpaConfiguration spaConfig = new();
+        bool isSpaConfigValid = true;
+        configuration.Bind("SpaConfiguration", spaConfig);
+
+        // Validation
+        if (string.IsNullOrWhiteSpace(spaConfig.Url))
+        {
+            Log.Fatal("Missing SPA configuration: SpaConfiguration.Url must be set.");
+            isSpaConfigValid = false;
+        }
+        else if (!spaConfig.Url.EndsWith('/'))
+        {
+            Log.Fatal("Missing SPA configuration: SpaConfiguration.Url must have a trailing \"/\" character.");
+        }
+        if (spaConfig.AuthMethods.Count == 0)
+        {
+            Log.Fatal("At least 1 authentication method must be specified.  SpaConfiguration.AuthMethods must be an array of strings.");
+            isSpaConfigValid = false;
+        }
+
+        if (isSpaConfigValid)
+        {
+            services.AddSingleton<Abstractions.ISpaConfiguration>(spaConfig);
+        }
+        else
+        {
+            throw new Exception("Invalid SPA configuration.  Startup aborted.");
+        }*/
+    }
+
+    public static IServiceCollection AddCustomSmtpOptions(this IServiceCollection services)
+    {
+        services.AddOptions<SmtpOptions>()
+            .BindConfiguration("Smtp");
+
+        return services;
+    }
+
+    public static IServiceCollection AddCustomModels(this IServiceCollection services)
+    {
+        services.AddScoped<Models.AppModel>();
+        services.AddScoped<Models.AccountModel>();
+        services.AddScoped<Models.EntryModel>();
+        services.AddScoped<Models.LookupTypeModel>();
+        services.AddScoped<Models.UserModel>();
+        services.AddScoped<Models.ProfileModel>();
+        services.AddScoped<Models.IdentityModel>();
+        services.AddScoped<Models.AzureAdModel>();
+        services.AddScoped<Models.EmailSender>();
+        services.AddScoped<Models.Validators>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddCustomMappers(this IServiceCollection services)
+    {
+        // Add AutoMapper methods for basic conversion between various layer DTOs.  This will handle simple properties like integers, strings, etc.  Value types like
+        // lists and objects need higher order methods to help ensure that only intended values are copied.  These higher order methods can be found in the Mappers folder.
+        // Additionally, certain fields need to be manually assigned from the BL when converting from WebContract to database models.  For example DateAddedUtc timestamps
+        // shouldn't be copied from the API caller.
+        services.AddAutoMapper(config => {
+            config.CreateMap<Kiddo.Database.Models.LookupType, Kiddo.WebContract.LookupType.LookupType>().ForMember(l => l.Lookups, op => op.Ignore());
+            config.CreateMap<Kiddo.Database.Models.Lookup, Kiddo.WebContract.LookupType.Lookup>();
+            config.CreateMap<Kiddo.WebContract.LookupType.Lookup, Kiddo.Database.Models.Lookup>();
+            config.CreateMap<Kiddo.Database.Models.Entry, Kiddo.WebContract.Entry.Entry>();
+            config.CreateMap<Kiddo.WebContract.Entry.Entry, Kiddo.Database.Models.Entry>().ForMember(e => e.DateAddedUtc, op => op.Ignore()).ForMember(e => e.UserId, op => op.Ignore());
+            config.CreateMap<Kiddo.Database.Models.User, Kiddo.WebContract.User.SearchUser>().ForMember(e => e.UserId, op => op.MapFrom(source => source.Id));
+            config.CreateMap<Kiddo.Database.Models.User, Kiddo.WebContract.User.User>().ForMember(e => e.UserId, op => op.MapFrom(source => source.Id));
+            config.CreateMap<Kiddo.WebContract.User.User, Kiddo.Database.Models.User>().ForMember(e => e.Id, op => op.MapFrom(source => source.UserId));
+            config.CreateMap<Kiddo.DAL.QueryModels.AccountCurrencySummary, Kiddo.WebContract.Account.AccountCurrencySummary>();
+            config.CreateMap<Kiddo.Database.Models.Account, Kiddo.WebContract.Account.Account>();
+            config.CreateMap<Kiddo.WebContract.Account.Account, Kiddo.Database.Models.Account>();
+            config.CreateMap<Kiddo.Database.Models.Account, Kiddo.WebContract.Account.SearchAccountResult>();
+            config.CreateMap<SpaOptions, Kiddo.WebContract.App.SpaConfiguration>();
+            config.CreateMap<Kiddo.Database.Models.User, Kiddo.WebContract.Profile.Profile>().ForMember(e => e.UserId, op => op.MapFrom(source => source.Id)).ForMember(e => e.IsEmailConfirmed, op => op.MapFrom(source => source.EmailConfirmed));
+            config.CreateMap<Microsoft.AspNetCore.Identity.PasswordOptions, Kiddo.WebContract.Identity.PasswordValidationRules>();
+            config.CreateMap<Microsoft.AspNetCore.Identity.IdentityError, Kiddo.WebContract.Identity.IdentityError>();
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddCustomSecurity(this IServiceCollection services, IConfiguration configuration)
     {
         // Dependencies on other services.
         services.AddOptions()
@@ -66,6 +194,7 @@ public static class SecurityExtensionMethods
         services.AddSingleton<IJwtUtils, JwtUtils>();
         services.AddScoped<IClaimsTransformation, SecurityRoleClaimsTransformation>();
         services.AddSingleton<AuthenticationMethodEnablementMiddleware>();
+        services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
 
         // Add ASP.Net Core Identity.
         services.AddIdentityCore<Kiddo.Database.Models.User>()
@@ -84,8 +213,7 @@ public static class SecurityExtensionMethods
             .AddMicrosoftGraph(configuration.GetSection(SecurityConstants.AzureAd.ApiGraphOptions))
             .AddInMemoryTokenCaches();
 
-        services.AddAuthentication(options =>
-        {
+        services.AddAuthentication(options => {
             options.Schemes.Where(s => s.Name == SecurityConstants.Scheme.AzureAd).First().HandlerType = typeof(SchemeEnabledJwtBearerHandler);
         });
 
@@ -168,5 +296,7 @@ public static class SecurityExtensionMethods
             options.AddPolicy(SecurityConstants.Policy.User, p => { p.RequireAuthenticatedUser().RequireScope(SecurityConstants.Scopes.KiddoAccess).RequireRole(new string[] { nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator), nameof(Kiddo.Constants.SecurityRoleType.Administrator), nameof(Kiddo.Constants.SecurityRoleType.User) }); });
             options.AddPolicy(SecurityConstants.Policy.ReadOnlyUser, p => { p.RequireAuthenticatedUser().RequireScope(SecurityConstants.Scopes.KiddoAccess).RequireRole(new string[] { nameof(Kiddo.Constants.SecurityRoleType.SuperAdministrator), nameof(Kiddo.Constants.SecurityRoleType.Administrator), nameof(Kiddo.Constants.SecurityRoleType.User), nameof(Kiddo.Constants.SecurityRoleType.ReadOnlyUser) }); });
         });
+
+        return services;
     }
 }

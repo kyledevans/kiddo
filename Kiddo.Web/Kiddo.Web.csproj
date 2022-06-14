@@ -19,20 +19,20 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-    <PackageReference Include="MailKit" Version="3.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
+    <PackageReference Include="MailKit" Version="3.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.4" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.24.1" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.24.1" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.24.1" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.6.4">
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.5" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.25.0" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.25.0" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.25.0" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.7.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -45,7 +45,7 @@
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-    <PackageReference Include="Serilog.Expressions" Version="3.3.0" />
+    <PackageReference Include="Serilog.Expressions" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="7.1.1" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
