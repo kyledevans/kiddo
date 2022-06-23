@@ -11,7 +11,7 @@ import { isNonEmptyString, parseIntStrict } from "../common/helper-functions";
 import { DirtyProvider, useDirtyReactHookForm } from "../common/dirty";
 import { useSnackbar } from "../common/snackbar";
 import { ErrorCalloutControl, ErrorCallout } from "../common/error-callout";
-import { useFormStateRefs, useAsyncLock } from "../common/hooks";
+import { useFormStateRefs, useAsyncLock, useReactHookFormSubmitHandlers } from "../common/hooks";
 import { PolicyType, withRequiredPolicy } from "../common/current-authorization";
 import { Toolbar, ToolbarBackButton, ToolbarColumn1, ToolbarColumn3 } from "../common/toolbar";
 import { withRequiredEmailConfirmation } from "../common/current-profile";
@@ -101,9 +101,9 @@ function AccountsEditPageInner() {
   const isDirty = useDirtyReactHookForm();
   const accountId = parseIntStrict(accountIdStr, `Route parameter "accountId" must be an integer.`);
   const saveErrorDlg = useRef<ErrorCalloutControl | null>(null);
-  const { handleSubmit, reset } = useFormContext<PageFormType>();
+  const { reset } = useFormContext<PageFormType>();
   const { field: nameShortField, fieldState: nameShortFieldState } = useController<PageFormType>({ name: "nameShort", rules: { required: true } }); // Need to customize the nameShort control because we force the user to create the string in all caps.
-  const { isSubmitting, isValidating } = useFormStateRefs();
+  const { isSubmitting } = useFormStateRefs();
   const [ isDeleteLocked, setDeleteLock, setDeleteUnlock ] = useAsyncLock(false);
   useTitleEffect(accountId === 0 ? "New Account" : "Edit Account");
 
@@ -169,17 +169,7 @@ function AccountsEditPageInner() {
     }
   }, [account, navigate, snackbar, setDeleteLock, setDeleteUnlock, isSubmitting, isDeleteLocked]);
 
-  const onSaveClick = useCallback(() => {
-    // Don't try to save if there is currently a save or validation in progress.
-    if (isSubmitting.current || isValidating.current || isDeleteLocked) {
-      return;
-    }
-
-    handleSubmit<PageFormType>(
-      (data, event) => onSubmitValid(data, event),
-      (errors, event) => onSubmitInvalid(errors, event)
-    )();
-  }, [handleSubmit, onSubmitValid, onSubmitInvalid, isSubmitting, isValidating, isDeleteLocked]);
+  const onSubmit = useReactHookFormSubmitHandlers(onSubmitValid, onSubmitInvalid);
 
   const dialogContentProps: IDialogContentProps = useMemo(() => {
     return {
@@ -203,15 +193,15 @@ function AccountsEditPageInner() {
   }, [nameShortField]);
 
   return account == null ? (<div></div>) : (
-    <div className={pageStyles.page}>
+    <form className={pageStyles.page} onSubmit={onSubmit} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
       <Toolbar>
         <ToolbarColumn1><ToolbarBackButton to="/manage/accounts">Back</ToolbarBackButton></ToolbarColumn1>
         <ToolbarColumn3>
           {accountId > 0 && (<CommandBarButton text="Delete" className={pageStyles.btnDelete} onClick={showDeleteDialog} iconProps={icons.delete} />)}
-          <CommandBarButton id="btnSave" className={pageStyles.btnSave} text="Save" onClick={onSaveClick} iconProps={icons.save} disabled={!isDirty} /><ErrorCallout target="#btnSave" control={saveErrorDlg}><Text variant="small">Error: Unable to save.</Text></ErrorCallout>
+          <CommandBarButton id="btnSave" className={pageStyles.btnSave} text="Save" type="submit" iconProps={icons.save} disabled={!isDirty} /><ErrorCallout target="#btnSave" control={saveErrorDlg}><Text variant="small">Error: Unable to save.</Text></ErrorCallout>
         </ToolbarColumn3>
       </Toolbar>
-      <form className={pageStyles.editForm} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
+      <div className={pageStyles.editForm}>
         <div className={`${pageStyles.row}`}>
           <Controller name="name" rules={{ required: true }} render={({ field, fieldState }) => <TextField label="Name" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
         </div>
@@ -221,14 +211,14 @@ function AccountsEditPageInner() {
         <div className={`${pageStyles.row} ${pageStyles.colspan2}`}>
           <Controller name="description" render={({ field, fieldState }) => <TextField label="Description" multiline autoAdjustHeight {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
         </div>
-      </form>
+      </div>
       <Dialog hidden={isDeleteDialogHidden} onDismiss={hideDeleteDialog} dialogContentProps={dialogContentProps} modalProps={modelProps}>
         <DialogFooter>
           <PrimaryButton onClick={onDeleteConfirm} text="Delete" />
           <DefaultButton onClick={hideDeleteDialog} text="Cancel" />
         </DialogFooter>
       </Dialog>
-    </div>
+    </form>
   );
 }
 

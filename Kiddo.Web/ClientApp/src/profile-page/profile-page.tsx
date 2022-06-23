@@ -6,7 +6,7 @@ import { Api } from "../api/api";
 import { Profile } from "../api/profile";
 import { DirtyProvider, useDirtyReactHookForm } from "../common/dirty";
 import { isNonEmptyString } from "../common/helper-functions";
-import { useFormStateRefs } from "../common/hooks";
+import { useFormStateRefs, useReactHookFormSubmitHandlers } from "../common/hooks";
 import { useTitleEffect } from "../common/title";
 import { useSnackbar } from "../common/snackbar";
 import { ErrorCallout, ErrorCalloutControl } from "../common/error-callout";
@@ -124,26 +124,16 @@ const ProfilePageInner: FunctionComponent<{ profile: Profile, setProfile: (newPr
     saveErrorDlg.current?.open(5000);
   }, []);
 
-  const onSaveClick = useCallback(() => {
-    // Don't try to save if there is currently a save or validation in progress.
-    if (isSubmitting.current || isValidating.current) {
-      return;
-    }
-
-    handleSubmit<PageFormType>(
-      (data, event) => onSubmitValid(data, event),
-      (errors, event) => onSubmitInvalid(errors, event)
-    )();
-  }, [handleSubmit, onSubmitValid, onSubmitInvalid, isSubmitting, isValidating]);
+  const onSubmit = useReactHookFormSubmitHandlers(onSubmitValid, onSubmitInvalid);
 
   return (
-    <div className={pageStyles.page}>
+    <form className={pageStyles.page} onSubmit={onSubmit} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
       <Toolbar>
         <ToolbarColumn3>
-          <CommandBarButton id="btnSave" className={pageStyles.btnSave} text="Save" onClick={onSaveClick} iconProps={icons.save} disabled={!isDirty} /><ErrorCallout target="#btnSave" control={saveErrorDlg}><Text variant="small">Error: Unable to save.</Text></ErrorCallout>
+          <CommandBarButton id="btnSave" className={pageStyles.btnSave} type="submit" text="Save" iconProps={icons.save} disabled={!isDirty} /><ErrorCallout target="#btnSave" control={saveErrorDlg}><Text variant="small">Error: Unable to save.</Text></ErrorCallout>
         </ToolbarColumn3>
       </Toolbar>
-      <form className={pageStyles.editForm} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
+      <div className={pageStyles.editForm}>
         <div className={pageStyles.profileTab}>
           <div className={`${pageStyles.row}`}>
             <Controller name="email" render={({ field, fieldState }) => <TextField className={pageStyles.col1} label="Email" type="email" autoComplete="email" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
@@ -159,8 +149,8 @@ const ProfilePageInner: FunctionComponent<{ profile: Profile, setProfile: (newPr
             <Controller name="surname" render={({ field, fieldState }) => <TextField className={pageStyles.col1} label="Last name" autoComplete="family-name" {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
           </div>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 }
 

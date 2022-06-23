@@ -6,7 +6,7 @@ import { useForm, useFormContext, FormProvider, Controller, SubmitHandler, Submi
 import { Api } from "../api/api";
 import { Profile } from "../api/profile";
 import { isNonEmptyString } from "../common/helper-functions";
-import { useFormStateRefs } from "../common/hooks";
+import { useFormStateRefs, useReactHookFormSubmitHandlers } from "../common/hooks";
 import { useSnackbar } from "../common/snackbar";
 import { useCurrentProfile } from "../common/current-profile";
 
@@ -140,23 +140,11 @@ const PasswordChangeDialogInner: FunctionComponent<{ dialogControl: MutableRefOb
 
   const onResetSubmitInvalid: SubmitErrorHandler<PasswordChangeFormType> = useCallback((errors, _ev) => { }, []);
 
-  const onResetSubmit: FormEventHandler = useCallback((event) => {
-    event?.preventDefault();
-
-    // Don't try to save if there is currently a save or validation in progress.
-    if (isSubmitting.current || isValidating.current) {
-      return;
-    }
-
-    handleSubmit<PasswordChangeFormType>(
-      (data, event) => onResetSubmitValid(data, event),
-      (errors, event) => onResetSubmitInvalid(errors, event)
-    )();
-  }, [isSubmitting, isValidating, handleSubmit, onResetSubmitValid, onResetSubmitInvalid]);
+  const onSubmit = useReactHookFormSubmitHandlers(onResetSubmitValid, onResetSubmitInvalid);
 
   return (
     <Dialog hidden={isDialogHidden} onDismiss={setIsDialogHidden} dialogContentProps={passwordChangeDialogProps} modalProps={modalProps}>
-      <form onSubmit={onResetSubmit} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
+      <form onSubmit={onSubmit} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
         <Controller name="currentPassword" rules={{ required: true }} render={({ field, fieldState }) => <TextField label="Current password" type="password" canRevealPassword required autoComplete="current-password" autoCorrect="off" autoCapitalize="off" spellCheck={false} {...field} value={field.value == null ? "" : field.value} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
         <Controller name="newPassword" rules={{ required: true }} render={({ field, fieldState }) => <TextField label="New password" type="password" canRevealPassword required autoComplete="new-password" autoCorrect="off" autoCapitalize="off" spellCheck={false} {...field} value={field.value == null ? "" : field.value} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
         <Controller name="newPasswordConfirm" rules={{ required: true }} render={({ field, fieldState }) => <TextField label="Confirm new password" type="password" canRevealPassword required autoComplete="new-password" autoCorrect="off" autoCapitalize="off" spellCheck={false} {...field} value={field.value == null ? "" : field.value} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
@@ -208,23 +196,11 @@ const PasswordSetDialogInner: FunctionComponent<{ dialogControl: MutableRefObjec
 
   const onResetSubmitInvalid: SubmitErrorHandler<{ newPassword: string, newPasswordConfirm: string }> = useCallback((errors, _ev) => { }, []);
 
-  const onResetSubmit: FormEventHandler = useCallback((event) => {
-    event?.preventDefault();
-
-    // Don't try to save if there is currently a save or validation in progress.
-    if (isSubmitting.current || isValidating.current) {
-      return;
-    }
-
-    handleSubmit<{ newPassword: string, newPasswordConfirm: string }>(
-      (data, event) => onResetSubmitValid(data, event),
-      (errors, event) => onResetSubmitInvalid(errors, event)
-    )();
-  }, [isSubmitting, isValidating, handleSubmit, onResetSubmitValid, onResetSubmitInvalid]);
+  const onSubmit = useReactHookFormSubmitHandlers(onResetSubmitValid, onResetSubmitInvalid);
 
   return (
     <Dialog hidden={isDialogHidden} onDismiss={setIsDialogHidden} dialogContentProps={passwordSetDialogProps} modalProps={modalProps}>
-      <form onSubmit={onResetSubmit} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
+      <form onSubmit={onSubmit} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
         <Controller name="newPassword" rules={{ required: true }} render={({ field, fieldState }) => <TextField label="New password" type="password" canRevealPassword required autoComplete="new-password" autoCorrect="off" autoCapitalize="off" spellCheck={false} {...field} value={field.value == null ? "" : field.value} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
         <Controller name="newPasswordConfirm" rules={{ required: true }} render={({ field, fieldState }) => <TextField label="Confirm new password" type="password" canRevealPassword required autoComplete="new-password" autoCorrect="off" autoCapitalize="off" spellCheck={false} {...field} value={field.value == null ? "" : field.value} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
         <DialogFooter>

@@ -172,23 +172,11 @@ const ResetDialogInner: FunctionComponent<{ dialogControl: MutableRefObject<Dial
 
   const onResetSubmitInvalid: SubmitErrorHandler<{ emailReset: string }> = useCallback((errors, _ev) => { }, []);
 
-  const onResetSubmit: FormEventHandler = useCallback((event) => {
-    event?.preventDefault();
-
-    // Don't try to save if there is currently a save or validation in progress.
-    if (isSubmitting.current || isValidating.current) {
-      return;
-    }
-
-    handleSubmit<{ emailReset: string }>(
-      (data, event) => onResetSubmitValid(data, event),
-      (errors, event) => onResetSubmitInvalid(errors, event)
-    )();
-  }, [isSubmitting, isValidating, handleSubmit, onResetSubmitValid, onResetSubmitInvalid]);
+  const onSubmit = useReactHookFormSubmitHandlers(onResetSubmitValid, onResetSubmitInvalid);
 
   return (
     <Dialog hidden={isDialogHidden} onDismiss={setIsDialogHidden} dialogContentProps={resetDialogProps} modalProps={resetModalProps}>
-      <form onSubmit={onResetSubmit} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
+      <form onSubmit={onSubmit} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
         <Controller name="emailReset" rules={{ required: true }} render={({ field, fieldState }) => <TextField label="Email" type="email" autoFocus required autoComplete="username" autoCorrect="off" autoCapitalize="off" spellCheck={false} {...field} value={field.value == null ? "" : field.value} maxLength={256} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} />
         <DialogFooter>
           <PrimaryButton type="submit" text="Send password reset" />

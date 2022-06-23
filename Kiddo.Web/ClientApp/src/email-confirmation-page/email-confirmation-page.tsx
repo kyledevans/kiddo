@@ -3,7 +3,7 @@ import { mergeStyleSets, PrimaryButton, TextField, Text } from "@fluentui/react"
 import { useForm, useFormContext, FormProvider, Controller, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 
 import { DirtyProvider, useDirtyReactHookForm } from "../common/dirty";
-import { useFormStateRefs } from "../common/hooks";
+import { useFormStateRefs, useReactHookFormSubmitHandlers } from "../common/hooks";
 import { useTitleEffect } from "../common/title";
 import { RouterPrimaryLinkButton } from "../common/router-link";
 import { Api } from "../api/api";
@@ -94,19 +94,7 @@ const EmailConfirmationPageInner: FunctionComponent<{ setConfirmState: (newConfi
 
   const onSubmitInvalid: SubmitErrorHandler<PageFormType> = useCallback((errors, _ev) => { }, []);
 
-  const onSubmit: FormEventHandler = useCallback((event) => {
-    event?.preventDefault();
-
-    // Don't try to save if there is currently a save or validation in progress.
-    if (isSubmitting.current || isValidating.current) {
-      return;
-    }
-
-    handleSubmit<PageFormType>(
-      (data, event) => onSubmitValid(data, event),
-      (errors, event) => onSubmitInvalid(errors, event)
-    )();
-  }, [handleSubmit, isSubmitting, isValidating, onSubmitInvalid, onSubmitValid]);
+  const onSubmit = useReactHookFormSubmitHandlers(onSubmitValid, onSubmitInvalid);
 
   useEffect(() => {
     (async () => {

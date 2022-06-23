@@ -5,7 +5,7 @@ import { useForm, useFormContext, FormProvider, Controller, SubmitHandler, Submi
 import { useNavigate } from "react-router";
 
 import { DirtyProvider, useDirtyReactHookForm } from "../common/dirty";
-import { useFormStateRefs } from "../common/hooks";
+import { useFormStateRefs, useReactHookFormSubmitHandlers } from "../common/hooks";
 import { useTitleEffect } from "../common/title";
 import { RouterDefaultLinkButton } from "../common/router-link";
 import { useAuthenticationManager, useAuthenticationManagerState } from "../common/authentication-react";
@@ -145,19 +145,7 @@ function LoginPageInner() {
 
   const onSubmitInvalid: SubmitErrorHandler<PageFormType> = useCallback((errors, _ev) => { }, []);
 
-  const onSubmit: FormEventHandler = useCallback((event) => {
-    event?.preventDefault();  // Block the browser default behavior to perform a full page post.
-
-    // Don't try to save if there is currently a save or validation in progress.
-    if (isSubmitting.current || isValidating.current) {
-      return;
-    }
-
-    handleSubmit<PageFormType>(
-      (data, event) => onSubmitValid(data, event),
-      (errors, event) => onSubmitInvalid(errors, event)
-    )();
-  }, [handleSubmit, isSubmitting, isValidating, onSubmitInvalid, onSubmitValid]);
+  const onSubmit = useReactHookFormSubmitHandlers(onSubmitValid, onSubmitInvalid);
 
   const RegisterForm = (
     <form className={pageStyles.registerContainer} onSubmit={onSubmit} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">

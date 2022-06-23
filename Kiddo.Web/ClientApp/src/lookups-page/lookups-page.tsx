@@ -11,7 +11,7 @@ import { useSnackbar } from "../common/snackbar";
 import { useDndSortOrder } from "../common/dnd-sort-order";
 import { ErrorCallout, ErrorCalloutControl } from "../common/error-callout";
 import { DirtyProvider, useDirtyReactHookForm } from "../common/dirty";
-import { useFormStateRefs } from "../common/hooks";
+import { useFormStateRefs, useReactHookFormSubmitHandlers } from "../common/hooks";
 import { PolicyType, withRequiredPolicy } from "../common/current-authorization";
 import { Toolbar, ToolbarColumn3 } from "../common/toolbar";
 import { withRequiredEmailConfirmation } from "../common/current-profile";
@@ -223,24 +223,14 @@ const LookupsPageInner: FunctionComponent<{ lookupTypeId: LookupTypeType }> = ({
     saveErrorDlg.current?.open(5000);
   }, [type]);
 
-  const onSaveClick = useCallback(() => {
-    // Don't try to save if there is currently a save or validation in progress.
-    if (isSubmitting.current || isValidating.current) {
-      return;
-    }
-
-    handleSubmit<PageFormType>(
-      (data, event) => onSubmitValid(data, event),
-      (errors, event) => onSubmitInvalid(errors, event)
-    )();
-  }, [handleSubmit, onSubmitValid, onSubmitInvalid, isSubmitting, isValidating]);
+  const onSubmit = useReactHookFormSubmitHandlers(onSubmitValid, onSubmitInvalid);
 
   return (
-    <div className={pageStyles.page}>
+    <form className={pageStyles.page} onSubmit={onSubmit} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
       <Toolbar>
         <ToolbarColumn3>
           <CommandBarButton className={pageStyles.btnAdd} text="Add" onClick={onAddClick} iconProps={icons.add} tabIndex={-1} />
-          <CommandBarButton className={pageStyles.btnSave} id="btnSave" text="Save" disabled={!isDirty} onClick={onSaveClick} iconProps={icons.save} tabIndex={-1} />
+          <CommandBarButton className={pageStyles.btnSave} id="btnSave" text="Save" type="submit" disabled={!isDirty} iconProps={icons.save} tabIndex={-1} />
           <ErrorCallout target="#btnSave" control={saveErrorDlg}><Text variant="small">Error: Unable to save.</Text></ErrorCallout>
         </ToolbarColumn3>
       </Toolbar>
@@ -249,10 +239,10 @@ const LookupsPageInner: FunctionComponent<{ lookupTypeId: LookupTypeType }> = ({
         <div className="toolbar-middle"></div>
         <div className="toolbar-right"></div>
       </div>
-      <form className={pageStyles.editForm} noValidate autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck="false">
+      <div className={pageStyles.editForm}>
         {type != null && (<ValuesList lookupTypeId={type.lookupTypeId} />)}
-      </form>
-    </div>
+      </div>
+    </form>
   );
 }
 
