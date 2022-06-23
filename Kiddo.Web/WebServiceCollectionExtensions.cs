@@ -151,19 +151,17 @@ public static class WebServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCustomPasswordIdentity(this IServiceCollection services)
     {
         // Dependencies on other services.
         services.AddOptions()
             .AddLogging()
-            .AddHttpContextAccessor();
-
-        // Abstraction for initial settings for users on registration.
-        services.AddScoped<IUserRegistrationBehavior, UserRegistrationBehavior>();
+            .AddHttpContextAccessor()
+            .AddSingleton<IJwtPairGenerator, JwtPairGenerator>();
 
         // Pull password complexity requirements from appsettings.json.
         services.AddOptions<IdentityOptions>()
-            .Configure(options => {
+            .Configure<IConfiguration>((options, configuration) => {
                 // Note that the Asp Net Core Identity framework internally accesses the IdentityOptions by referencing the dependency IOptions<IdentityOption>.
                 // This means that we cannot use the slightly easier to use syntax: services.AddOptions<...>().BindConfiguration("section...").
                 configuration.Bind(SecurityConstants.AspNetIdentity.PasswordOptions, options.Password);
@@ -174,28 +172,6 @@ public static class WebServiceCollectionExtensions
                 options.SignIn.RequireConfirmedEmail = spaOptionsMonitor.CurrentValue.IsEmailConfirmationRequired;
             });
 
-        services.AddOptions<IdentityOptions>()
-            .Configure(options => {
-                // Note that the Asp Net Core Identity framework internally accesses the IdentityOptions by referencing the dependency IOptions<IdentityOption>.
-                // This means that we cannot use the slightly easier to use syntax: services.AddOptions<...>().BindConfiguration("section...").
-                configuration.Bind(SecurityConstants.AspNetIdentity.PasswordOptions, options.Password);
-            });
-
-        services.AddOptions<SpaAzureAdOptions>()
-            .BindConfiguration(SecurityConstants.AzureAd.SpaAzureAdOptions);
-
-        services.AddSingleton<JwtSigningKey>((services) => {
-            string? secretKey = configuration.GetValue<string?>(SecurityConstants.AspNetIdentity.SecurityKeyOptions);
-            if (secretKey == null) throw new Exception($"{SecurityConstants.AspNetIdentity.SecurityKeyOptions} was not defined in appsettings.json.");
-            JwtSigningKey signingKey = new(System.Text.Encoding.UTF8.GetBytes(secretKey));
-            return signingKey;
-        });
-
-        services.AddSingleton<IJwtUtils, JwtUtils>();
-        services.AddScoped<IClaimsTransformation, SecurityRoleClaimsTransformation>();
-        services.AddSingleton<AuthenticationMethodEnablementMiddleware>();
-        services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
-
         // Add ASP.Net Core Identity.
         services.AddIdentityCore<Kiddo.Database.Models.User>()
             .AddSignInManager<SignInManager<Kiddo.Database.Models.User>>()
@@ -203,52 +179,61 @@ public static class WebServiceCollectionExtensions
             .AddEntityFrameworkStores<Kiddo.DAL.KiddoDbContextExtended>()
             .AddDefaultTokenProviders();
 
-        AuthenticationBuilder authBuilder = services.AddAuthentication(SecurityConstants.Scheme.Selector)
-            .AddScheme<PolicySchemeOptions, PolicySchemeHandler>(SecurityConstants.Scheme.Selector, SecurityConstants.Scheme.Selector, null)
+        services.AddOptions<JwtBearerOptions>(SecurityConstants.Scheme.AspNetIdentity)
+            .Configure<IJwtPairGenerator>((options, jwtPairGenerator) => {
+                options.TokenValidationParameters = jwtPairGenerator.AllTokenValidationParameters;
+            });
+
+        services.AddAuthentication()
             .AddScheme<JwtBearerOptions, SchemeEnabledJwtBearerHandler>(SecurityConstants.Scheme.AspNetIdentity, SecurityConstants.Scheme.AspNetIdentity, null);
 
-        authBuilder.AddMicrosoftIdentityWebApi(configuration.GetSection(SecurityConstants.AzureAd.ApiAzureAdOptions), SecurityConstants.Scheme.AzureAd)
+        services.AddOptions<SelectorAuthenticationSchemeProviderOptions>()
+            .Configure(options => {
+                options.Selectors.Add((token) => token.Issuer == SecurityConstants.AspNetIdentity.Issuer ? SecurityConstants.Scheme.AspNetIdentity : null);
+            });
+
+        return services;
+    }
+
+    public static IServiceCollection AddCustomAzureAdIdentity(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<SpaAzureAdOptions>()
+            .BindConfiguration(SecurityConstants.AzureAd.SpaAzureAdOptions);
+
+        services.AddAuthentication()
+            .AddMicrosoftIdentityWebApi(configuration.GetSection(SecurityConstants.AzureAd.ApiAzureAdOptions), SecurityConstants.Scheme.AzureAd)
             .EnableTokenAcquisitionToCallDownstreamApi()
             .AddMicrosoftGraph(configuration.GetSection(SecurityConstants.AzureAd.ApiGraphOptions))
             .AddInMemoryTokenCaches();
 
-        services.AddAuthentication(options => {
-            options.Schemes.Where(s => s.Name == SecurityConstants.Scheme.AzureAd).First().HandlerType = typeof(SchemeEnabledJwtBearerHandler);
-        });
-
         // These options are normally handled entirely by the AzureAD SDK.  However in order for them to
         // be usable by the ManualGraphServiceClient they need to be manually bound here.
         services.AddOptions<MicrosoftIdentityOptions>()
-            .BindConfiguration("ApiAzureAd");
+            .BindConfiguration(SecurityConstants.AzureAd.ApiAzureAdOptions);
         services.AddOptions<ConfidentialClientApplicationOptions>()
-            .BindConfiguration("ApiGraph");
+            .BindConfiguration(SecurityConstants.AzureAd.ApiGraphOptions);
         services.AddScoped<IManualGraphServiceClient, ManualGraphServiceClient>();
 
-        services.AddOptions<PolicySchemeOptions>(SecurityConstants.Scheme.Selector)
-            .Configure<IOptions<SpaOptions>>((options, spaOptions) => {
-                options.ForwardDefaultSelector = context => {
-                    context.Request.Headers.TryGetValue(HeaderNames.Authorization, out Microsoft.Extensions.Primitives.StringValues authHeader);
-                    if (authHeader.Count == 0) return SecurityConstants.Scheme.AspNetIdentity;
-                    string encodedToken = authHeader.First().Substring(JwtBearerDefaults.AuthenticationScheme.Length + 1);
-                    JwtSecurityTokenHandler jwtHandler = new();
-                    JwtSecurityToken token = jwtHandler.ReadJwtToken(encodedToken);
-
-                    // TODO: Figure out a better way to determine the issuer is from Azure AD.
-                    if (token.Issuer.StartsWith(SecurityConstants.AzureAd.IssuerPrefix)) return SecurityConstants.Scheme.AzureAd;
-                    else return SecurityConstants.Scheme.AspNetIdentity;
-                };
+        services.AddOptions<SelectorAuthenticationSchemeProviderOptions>()
+            .Configure(options => {
+                options.Selectors.Add((token) => token.Issuer.StartsWith(SecurityConstants.AzureAd.IssuerPrefix) ? SecurityConstants.Scheme.AzureAd : null);
             });
 
-        services.AddOptions<JwtBearerOptions>(SecurityConstants.Scheme.AspNetIdentity)
-            .Configure<JwtSigningKey, IOptions<SpaOptions>>((options, signingKey, spaOptions) => {
-                options.TokenValidationParameters = new() {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = signingKey,
-                    ValidIssuer = SecurityConstants.AspNetIdentity.Issuer,
-                    ValidAudiences = new[] { SecurityConstants.AspNetIdentity.AccessTokenAudience, SecurityConstants.AspNetIdentity.RefreshTokenAudience },
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
+        return services;
+    }
+
+    public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<IUserRegistrationBehavior, UserRegistrationBehavior>();
+
+        services.AddOptions<SelectorAuthenticationSchemeProviderOptions>();
+        services.AddSingleton<IAuthenticationSchemeProvider, SelectorAuthenticationSchemeProvider>();
+        services.AddScoped<IClaimsTransformation, SecurityRoleClaimsTransformation>();
+        services.AddSingleton<AuthenticationMethodEnablementMiddleware>();
+        services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
+
+        services.AddCustomPasswordIdentity();
+        services.AddCustomAzureAdIdentity(configuration);
 
         return services;
     }

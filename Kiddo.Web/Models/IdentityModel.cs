@@ -14,7 +14,7 @@ public class IdentityModel
     private UserManager<Database.Models.User> UserManager { get; set; }
     private SignInManager<Database.Models.User> SignInManager { get; set; }
     private IMapper Mapper { get; set; }
-    private Security.IJwtUtils JwtUtils { get; set; }
+    private Security.IJwtPairGenerator JwtUtils { get; set; }
     private ICurrentUserProvider CurrentUser { get; set; }
     private DAL.UserDAL UserDB { get; set; }
     private DAL.KiddoDAL DB { get; set; }
@@ -24,7 +24,7 @@ public class IdentityModel
     private SpaOptions SpaConfig { get; set; }
     private EmailSender EmailSender { get; set; }
 
-    public IdentityModel(DAL.KiddoDAL db, DAL.UserDAL userDB, UserManager<Database.Models.User> userManager, SignInManager<Database.Models.User> signInManager, IMapper mapper, Security.IJwtUtils jwtUtils, ICurrentUserProvider currentUser, IOptionsMonitor<IdentityOptions> identityOptionsMonitor, IUserRegistrationBehavior registrationBehavior, IOptionsMonitor<SmtpOptions> smtpOptions, IOptionsMonitor<SpaOptions> spaConfigurationMonitor, EmailSender emailSender)
+    public IdentityModel(DAL.KiddoDAL db, DAL.UserDAL userDB, UserManager<Database.Models.User> userManager, SignInManager<Database.Models.User> signInManager, IMapper mapper, Security.IJwtPairGenerator jwtUtils, ICurrentUserProvider currentUser, IOptionsMonitor<IdentityOptions> identityOptionsMonitor, IUserRegistrationBehavior registrationBehavior, IOptionsMonitor<SmtpOptions> smtpOptions, IOptionsMonitor<SpaOptions> spaConfigurationMonitor, EmailSender emailSender)
     {
         UserDB = userDB;
         UserManager = userManager;

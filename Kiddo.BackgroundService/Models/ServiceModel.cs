@@ -132,7 +132,7 @@ public class ServiceModel
                     Database.Models.Account dbAccount = dbAccounts[accountIndex];
                     Database.Models.User dbUser = dbUsers[rng.Next(counts.users)];
                     Database.Models.Lookup dbLookup = dbLookups[rng.Next(counts.currencies)];
-                    
+
                     dbEntries.Add(new() { AccountId = dbAccount.AccountId, UserId = dbUser.Id, CurrencyLookupId = dbLookup.LookupId, Value = 1, DateAddedUtc = DateTime.UtcNow });
                 }
             }
