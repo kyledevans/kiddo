@@ -12,17 +12,12 @@ public static class UtilityServiceCollectionExtensions
     /// <param name="serviceName"></param>
     /// <param name="configurationFunc"></param>
     /// <exception cref="Exception"></exception>
-    public static void AddSerialDispatchService(this IServiceCollection services, string serviceName, Action<SerialDispatchServiceOptions>? configurationFunc = null)
+    public static void AddSerialDispatchService(this IServiceCollection services, string serviceName)
     {
-        SerialDispatchServiceOptions options = new(serviceName);
+        services.AddSingleton<IDispatchQueue, DispatchQueue>();
 
-        configurationFunc?.Invoke(options);
-
-        DispatchQueue queue = new(options.MaxQueueLength);
-
-        services.AddSingleton<IDispatchQueue>(queue);
         services.AddHostedService<SerialDispatchService>((serv) => {
-            SerialDispatchService? dispatchService = ActivatorUtilities.CreateInstance(serv, typeof(SerialDispatchService), options) as SerialDispatchService;
+            SerialDispatchService? dispatchService = ActivatorUtilities.CreateInstance(serv, typeof(SerialDispatchService)) as SerialDispatchService;
 
             if (dispatchService == null)
             {
@@ -32,6 +27,10 @@ public static class UtilityServiceCollectionExtensions
             {
                 return dispatchService;
             }
+        });
+
+        services.Configure<SerialDispatchServiceOptions>(options => {
+            options.ServiceName = serviceName;
         });
     }
 }

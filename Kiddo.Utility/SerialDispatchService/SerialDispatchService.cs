@@ -4,33 +4,29 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 
 public class SerialDispatchService : BackgroundService
 {
     private IDispatchQueue Queue { get; set; }
     private IServiceProvider Services { get; set; }
     private ILogger<SerialDispatchService> Logger { get; set; }
-    private SerialDispatchServiceOptions Options { get; set; }
+    private IOptionsMonitor<SerialDispatchServiceOptions> OptionsMonitor { get; set; }
     private SerialDispatchServiceHealthCheckLiveness? HealthCheckLiveness { get; set; }
     private SerialDispatchServiceHealthCheckReadiness? HealthCheckReadiness { get; set; }
     private SerialDispatchServiceHealthCheckStartup? HealthCheckStartup { get; set; }
 
-    public SerialDispatchService(IDispatchQueue queue, ILogger<SerialDispatchService> logger, IServiceProvider services, SerialDispatchServiceOptions options)
+    public SerialDispatchService(IDispatchQueue queue, ILogger<SerialDispatchService> logger, IServiceProvider services, IOptionsMonitor<SerialDispatchServiceOptions> options)
     {
         Queue = queue;
         Logger = logger;
         Services = services;
-        Options = options;
+        OptionsMonitor = options;
 
         // Health checks are optional
         HealthCheckLiveness = services.GetService<SerialDispatchServiceHealthCheckLiveness>();
         HealthCheckReadiness = services.GetService<SerialDispatchServiceHealthCheckReadiness>();
         HealthCheckStartup = services.GetService<SerialDispatchServiceHealthCheckStartup>();
-
-        if (String.IsNullOrWhiteSpace(options.ServiceName))
-        {
-            throw new Exception($"{nameof(SerialDispatchServiceOptions.ServiceName)} cannot be null, empty, or whitespace.");
-        }
 
         HealthCheckStartup?.SetHealth(HealthStatus.Degraded, "Starting");
         HealthCheckReadiness?.SetHealth(HealthStatus.Degraded, "Starting");
@@ -39,12 +35,19 @@ public class SerialDispatchService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        Logger.LogInformation("SerialDispatchService: \"{ServiceName}\" is starting.", Options.ServiceName);
+        SerialDispatchServiceOptions options = OptionsMonitor.CurrentValue;
+
+        if (String.IsNullOrWhiteSpace(options.ServiceName))
+        {
+            throw new Exception($"{nameof(SerialDispatchServiceOptions.ServiceName)} cannot be null, empty, or whitespace.");
+        }
+
+        Logger.LogInformation("SerialDispatchService: \"{ServiceName}\" is starting.", options.ServiceName);
 
         HealthCheckStartup?.SetHealth(HealthStatus.Healthy, null);
         HealthCheckReadiness?.SetHealth(HealthStatus.Healthy, null);
         HealthCheckLiveness?.SetHealth(HealthStatus.Healthy, null);
-        Logger.LogInformation("SerialDispatchService: \"{ServiceName}\" is started.", Options.ServiceName);
+        Logger.LogInformation("SerialDispatchService: \"{ServiceName}\" is started.", options.ServiceName);
 
         await foreach (JobContainer container in Queue.DequeueAllAsync(cancellationToken))
         {
@@ -79,11 +82,11 @@ public class SerialDispatchService : BackgroundService
             }
         }
 
-        Logger.LogInformation("SerialDispatchService: {ServiceName} is stopping.", Options.ServiceName);
+        Logger.LogInformation("SerialDispatchService: {ServiceName} is stopping.", options.ServiceName);
 
         HealthCheckReadiness?.SetHealth(HealthStatus.Unhealthy, "Stopped");
         HealthCheckLiveness?.SetHealth(HealthStatus.Unhealthy, "Stopped");
 
-        Logger.LogInformation("SerialDispatchService: {ServiceName} is stopped.", Options.ServiceName);
+        Logger.LogInformation("SerialDispatchService: {ServiceName} is stopped.", options.ServiceName);
     }
 }

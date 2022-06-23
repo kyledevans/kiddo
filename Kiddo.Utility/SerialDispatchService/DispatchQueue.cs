@@ -1,22 +1,37 @@
 ﻿namespace Kiddo.Utility.SerialDispatchService;
 
+using Microsoft.Extensions.Options;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Channels;
 
 public class DispatchQueue : IDispatchQueue
 {
-    private Channel<JobContainer> InternalQueue { get; set; }
+    private Channel<JobContainer>? InternalQueue { get; set; }
+    private IOptionsMonitor<SerialDispatchServiceOptions> OptionsMonitor { get; set; }
 
-    public DispatchQueue(int maxQueueLength)
+    public DispatchQueue(IOptionsMonitor<SerialDispatchServiceOptions> optionsMonitor)
     {
-        BoundedChannelOptions options = new(maxQueueLength);
-        options.SingleReader = true;
-        options.SingleWriter = false;
+        OptionsMonitor = optionsMonitor;
+    }
+
+    [MemberNotNull(nameof(InternalQueue))]
+    private void Initialize()
+    {
+        if (InternalQueue != null) return;
+
+        BoundedChannelOptions options = new(OptionsMonitor.CurrentValue.MaxQueueLength)
+        {
+            SingleReader = true,
+            SingleWriter = false
+        };
 
         InternalQueue = Channel.CreateBounded<JobContainer>(options);
     }
 
     public Guid Enqueue<T, D>(string jobName, D data) where T : IJob
     {
+        Initialize();
+
         Guid jobId = Guid.NewGuid();
 
         bool success = InternalQueue.Writer.TryWrite(new(jobId, jobName, typeof(T), data));
@@ -31,6 +46,8 @@ public class DispatchQueue : IDispatchQueue
 
     public Guid Enqueue<T>(string jobName) where T : IJob
     {
+        Initialize();
+
         Guid jobId = Guid.NewGuid();
 
         bool success = InternalQueue.Writer.TryWrite(new(jobId, jobName, typeof(T), null));
@@ -45,6 +62,8 @@ public class DispatchQueue : IDispatchQueue
 
     public IAsyncEnumerable<JobContainer> DequeueAllAsync(CancellationToken cancellationToken)
     {
+        Initialize();
+
         return InternalQueue.Reader.ReadAllAsync(cancellationToken);
     }
 }
