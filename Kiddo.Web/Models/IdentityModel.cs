@@ -136,7 +136,6 @@ public class IdentityModel
         // intended to be used along with cookie based authentication.  If we were to try and call that, we would get runtime errors
         // because cookies have not been configured in the system.
         SignInResult result = await SignInManager.CheckPasswordSignInAsync(aspUser, password, true).ConfigureAwait(false);
-
         if (!result.Succeeded)
         {
             retval.Success = false;

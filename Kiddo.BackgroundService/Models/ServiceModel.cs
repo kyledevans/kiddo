@@ -31,7 +31,7 @@ public class ServiceModel
 
     public Guid CreateSampleInit()
     {
-        Guid jobId = DispatchQueue.Enqueue<CreateSampleInitJob, CreateSampleInitJobOptions>("CreateSampleInit", new() { SampleSize = SampleSizeType.Medium });
+        Guid jobId = DispatchQueue.Enqueue<CreateSampleInitJob, CreateSampleInitJobOptions>("CreateSampleInit", new() { SampleSize = SampleSizeType.Large });
         return jobId;
     }
 

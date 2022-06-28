@@ -96,13 +96,12 @@ function useInitializeEffect(authManager: IAuthenticationManager | null, spaConf
 
         if (registerResponse.statusCode === RegisterStatusCodeType.Success) {
           // Newly registered.
-          snackbar.open("Registered!");
           reset();
-          navigate("/");
+          window.location.assign("/");
         } else if (registerResponse.statusCode === RegisterStatusCodeType.AlreadyRegistered) {
           // User is already registered.  Silently redirect them away from the login page.
           reset();
-          navigate("/");
+          window.location.assign("/");
         } else if (registerResponse.statusCode === RegisterStatusCodeType.InvalidFields) {
           // The user needs to register, but some of their profile data doesn't pass validation.  Prompt to manually enter some details.
           setFormValue("email", registerResponse?.prefillData?.email ?? "");
