@@ -19,7 +19,7 @@ public class AzureAdController : ControllerBase
     // since this is a "register" endpoint, it usually won't be possible for the user to even be assigned a role within the application yet.
     [Authorize(Policy = Security.SecurityConstants.Policy.AzureAd)]
     [HttpPost("Register")]
-    [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
+    [Security.Selector.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
     public async Task<ActionResult<RegisterResponse>> Register()
     {
         RegisterResponse response = await AzureAdModel.Register(null, null).ConfigureAwait(false);
@@ -37,7 +37,7 @@ public class AzureAdController : ControllerBase
      */
     [Authorize(Policy = Security.SecurityConstants.Policy.AzureAd)]
     [HttpPost("RegisterManual")]
-    [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
+    [Security.Selector.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
     public async Task<ActionResult<RegisterResponse>> RegisterManual(RegisterRequest request)
     {
         RegisterResponse response = await AzureAdModel.Register(request, null).ConfigureAwait(false);
@@ -51,7 +51,7 @@ public class AzureAdController : ControllerBase
     /// <returns></returns>
     [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     [HttpPost("LinkToExisting")]
-    [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
+    [Security.Selector.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
     [Security.EmailRequired]
     public async Task<ActionResult<RegisterResponse>> LinkToExisting(LinkToExistingRequest linkRequest)
     {
@@ -61,7 +61,7 @@ public class AzureAdController : ControllerBase
 
     [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     [HttpPost("RemoveLink")]
-    [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
+    [Security.Selector.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
     [Security.EmailRequired]
     public async Task<ActionResult> RemoveLink(RemoveLinkRequest removeRequest)
     {
@@ -71,7 +71,7 @@ public class AzureAdController : ControllerBase
 
     [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     [HttpGet("GetAccountLinks")]
-    [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
+    [Security.Selector.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
     public async Task<ActionResult<List<AccountLink>>> GetAccountLinks()
     {
         List<AccountLink> response = await AzureAdModel.GetAccountLinks().ConfigureAwait(false);

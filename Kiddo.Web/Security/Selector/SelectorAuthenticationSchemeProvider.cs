@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Security;
+﻿namespace Kiddo.Web.Security.Selector;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,9 +49,7 @@ public class SelectorAuthenticationSchemeProvider : AuthenticationSchemeProvider
             }
 
             if (authMethod != null)
-            {
                 return await GetSchemeAsync(authMethod).ConfigureAwait(false);
-            }
         }
 
         return null;

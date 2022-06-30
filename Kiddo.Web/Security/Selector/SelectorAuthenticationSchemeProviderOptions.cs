@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Security;
+﻿namespace Kiddo.Web.Security.Selector;
 
 using System.IdentityModel.Tokens.Jwt;
 

@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Security;
+﻿namespace Kiddo.Web.Security.AzureAd;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;

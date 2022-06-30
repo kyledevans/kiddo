@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Security;
+﻿namespace Kiddo.Web.Security.Identity;
 
 using Microsoft.IdentityModel.Tokens;
 

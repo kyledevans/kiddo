@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Security;
+﻿namespace Kiddo.Web.Security.AzureAd;
 
 using Microsoft.Graph;
 

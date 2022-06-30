@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Security;
+﻿namespace Kiddo.Web.Security.Identity;
 
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
@@ -20,8 +20,7 @@ public class JwtPairGenerator : IJwtPairGenerator
         SigningKey = new(System.Text.Encoding.UTF8.GetBytes(secretKey));
         SigningCredentials = new(SigningKey, SecurityAlgorithms.HmacSha512Signature);
 
-        RefreshTokenValidationParameters = new()
-        {
+        RefreshTokenValidationParameters = new() {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = SigningKey,
             ValidIssuer = SecurityConstants.AspNetIdentity.Issuer,
@@ -29,8 +28,7 @@ public class JwtPairGenerator : IJwtPairGenerator
             ClockSkew = TimeSpan.Zero   // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
         };
 
-        AccessTokenValidationParameters = new()
-        {
+        AccessTokenValidationParameters = new() {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = SigningKey,
             ValidIssuer = SecurityConstants.AspNetIdentity.Issuer,

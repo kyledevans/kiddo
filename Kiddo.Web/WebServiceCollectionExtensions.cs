@@ -12,6 +12,9 @@ using System.Security.Claims;
 using Kiddo.Web.Configuration;
 using Kiddo.Web.Security;
 using Microsoft.OpenApi.Models;
+using Kiddo.Web.Security.Identity;
+using Kiddo.Web.Security.AzureAd;
+using Kiddo.Web.Security.Selector;
 
 public static class WebServiceCollectionExtensions
 {
@@ -192,6 +195,14 @@ public static class WebServiceCollectionExtensions
                 options.Selectors.Add((token) => token.Issuer == SecurityConstants.AspNetIdentity.Issuer ? SecurityConstants.Scheme.AspNetIdentity : null);
             });
 
+        services.AddOptions<SelectorClaimsTransformationOptions>()
+            .Configure(options => {
+                options.Selectors.Add((principal) => {
+                    Claim? issuerClaim = principal.Claims.Where(c => c.Type == SecurityConstants.ClaimType.Issuer).FirstOrDefault();
+                    return issuerClaim?.Value == SecurityConstants.AspNetIdentity.Issuer ? typeof(IdentityClaimsTransformation) : null;
+                });
+            });
+
         return services;
     }
 
@@ -219,6 +230,14 @@ public static class WebServiceCollectionExtensions
                 options.Selectors.Add((token) => token.Issuer.StartsWith(SecurityConstants.AzureAd.IssuerPrefix) ? SecurityConstants.Scheme.AzureAd : null);
             });
 
+        services.AddOptions<SelectorClaimsTransformationOptions>()
+            .Configure(options => {
+                options.Selectors.Add((principal) => {
+                    Claim? issuerClaim = principal.Claims.Where(c => c.Type == SecurityConstants.ClaimType.Issuer).FirstOrDefault();
+                    return issuerClaim != null && issuerClaim.Value.StartsWith(SecurityConstants.AzureAd.IssuerPrefix) ? typeof(AzureAdClaimsTransformation) : null;
+                });
+            });
+
         return services;
     }
 
@@ -228,7 +247,8 @@ public static class WebServiceCollectionExtensions
 
         services.AddOptions<SelectorAuthenticationSchemeProviderOptions>();
         services.AddSingleton<IAuthenticationSchemeProvider, SelectorAuthenticationSchemeProvider>();
-        services.AddScoped<IClaimsTransformation, SecurityRoleClaimsTransformation>();
+        services.AddOptions<SelectorClaimsTransformationOptions>();
+        services.AddScoped<IClaimsTransformation, SelectorClaimsTransformation>();
         services.AddSingleton<AuthenticationMethodEnablementMiddleware>();
         services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
 

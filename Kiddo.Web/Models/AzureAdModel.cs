@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using Kiddo.WebContract.AzureAd;
 using Kiddo.Web.Security;
 using AutoMapper;
+using Kiddo.Web.Security.AzureAd;
 
 public class AzureAdModel
 {

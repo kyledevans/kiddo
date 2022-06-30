@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Security;
+﻿namespace Kiddo.Web.Security.Selector;
 
 using Kiddo.Web.Configuration;
 using Microsoft.AspNetCore.Mvc;
@@ -18,9 +18,7 @@ public class AuthenticationMethodEnablementMiddleware : IMiddleware
         IReadOnlyList<AuthenticationMethodEnabledAttribute>? authMethodAttrs = context.GetEndpoint()?.Metadata.GetOrderedMetadata<AuthenticationMethodEnabledAttribute>();
 
         if (authMethodAttrs == null || authMethodAttrs.Count == 0)
-        {
             await next(context).ConfigureAwait(false);
-        }
         else
         {
             SpaOptions spaOptions = SpaOptionsMonitor.CurrentValue;
@@ -31,8 +29,7 @@ public class AuthenticationMethodEnablementMiddleware : IMiddleware
                     context.Response.Clear();
                     context.Response.ContentType = System.Net.Mime.MediaTypeNames.Text.Plain;
                     context.Response.StatusCode = StatusCodes.Status409Conflict;
-                    ProblemDetails details = new()
-                    {
+                    ProblemDetails details = new() {
                         Type = WebContract.ProblemDetailTypes.AuthenticationMethodNotEnabled
                     };
                     await context.Response.WriteAsJsonAsync(details, null, "application/problem+json").ConfigureAwait(false);
