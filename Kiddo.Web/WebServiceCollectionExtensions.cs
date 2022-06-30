@@ -191,17 +191,9 @@ public static class WebServiceCollectionExtensions
             .AddScheme<JwtBearerOptions, SchemeEnabledJwtBearerHandler>(SecurityConstants.Scheme.AspNetIdentity, SecurityConstants.Scheme.AspNetIdentity, null);
 
         services.AddOptions<SelectorAuthenticationSchemeProviderOptions>()
-            .Configure(options => {
-                options.Selectors.Add((token) => token.Issuer == SecurityConstants.AspNetIdentity.Issuer ? SecurityConstants.Scheme.AspNetIdentity : null);
-            });
-
+            .Configure(options => options.Selectors.Add(SelectorDelegates.IdentityAuthenticationSchemeProviderSelector));
         services.AddOptions<SelectorClaimsTransformationOptions>()
-            .Configure(options => {
-                options.Selectors.Add((principal) => {
-                    Claim? issuerClaim = principal.Claims.Where(c => c.Type == SecurityConstants.ClaimType.Issuer).FirstOrDefault();
-                    return issuerClaim?.Value == SecurityConstants.AspNetIdentity.Issuer ? typeof(IdentityClaimsTransformation) : null;
-                });
-            });
+            .Configure(options => options.Selectors.Add(SelectorDelegates.IdentityClaimsTransformationSelector));
 
         return services;
     }
@@ -226,17 +218,9 @@ public static class WebServiceCollectionExtensions
         services.AddScoped<IManualGraphServiceClient, ManualGraphServiceClient>();
 
         services.AddOptions<SelectorAuthenticationSchemeProviderOptions>()
-            .Configure(options => {
-                options.Selectors.Add((token) => token.Issuer.StartsWith(SecurityConstants.AzureAd.IssuerPrefix) ? SecurityConstants.Scheme.AzureAd : null);
-            });
-
+            .Configure(options => options.Selectors.Add(SelectorDelegates.AzureAdAuthenticationSchemeProviderSelector));
         services.AddOptions<SelectorClaimsTransformationOptions>()
-            .Configure(options => {
-                options.Selectors.Add((principal) => {
-                    Claim? issuerClaim = principal.Claims.Where(c => c.Type == SecurityConstants.ClaimType.Issuer).FirstOrDefault();
-                    return issuerClaim != null && issuerClaim.Value.StartsWith(SecurityConstants.AzureAd.IssuerPrefix) ? typeof(AzureAdClaimsTransformation) : null;
-                });
-            });
+            .Configure(options => options.Selectors.Add(SelectorDelegates.AzureAdClaimsTranformationSelector));
 
         return services;
     }

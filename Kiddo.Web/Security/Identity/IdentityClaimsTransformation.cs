@@ -1,22 +1,15 @@
 ﻿namespace Kiddo.Web.Security.Identity;
 
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
 public class IdentityClaimsTransformation : IClaimsTransformation
 {
-    private DAL.UserDAL UserDB { get; set; }
-    private IAuthorizationService AuthorizationService { get; set; }
-    private RoleManager<Database.Models.Role> RoleManager { get; set; }
     private UserManager<Database.Models.User> UserManager { get; set; }
 
-    public IdentityClaimsTransformation(DAL.UserDAL userDB, IAuthorizationService authorizationService, UserManager<Database.Models.User> userManager, RoleManager<Database.Models.Role> roleManager)
+    public IdentityClaimsTransformation(UserManager<Database.Models.User> userManager)
     {
-        UserDB = userDB;
-        AuthorizationService = authorizationService;
-        RoleManager = roleManager;
         UserManager = userManager;
     }
 
