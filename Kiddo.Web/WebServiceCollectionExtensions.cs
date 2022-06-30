@@ -222,6 +222,9 @@ public static class WebServiceCollectionExtensions
         services.AddOptions<SelectorClaimsTransformationOptions>()
             .Configure(options => options.Selectors.Add(SelectorDelegates.AzureAdClaimsTranformationSelector));
 
+        services.AddOptions<AuthenticationOptions>()
+            .Configure(options => options.Schemes.Where(s => s.Name == SecurityConstants.Scheme.AzureAd).First().HandlerType = typeof(SchemeEnabledJwtBearerHandler));
+
         return services;
     }
 

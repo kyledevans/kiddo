@@ -38,7 +38,9 @@ public class SchemeEnabledJwtBearerHandler : JwtBearerHandler
         }
 
         if (authMethod == null)
+        {
             throw new Exception($"Cannot authenticate against a null scheme.");
+        }
         else if (spaOptions.AuthMethods.Contains((WebContract.AuthenticationMethodType)authMethod))
         {
             result = await base.HandleAuthenticateAsync().ConfigureAwait(false);
