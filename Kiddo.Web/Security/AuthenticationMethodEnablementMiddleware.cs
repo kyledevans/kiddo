@@ -1,4 +1,4 @@
-﻿namespace Kiddo.Web.Security.Selector;
+﻿namespace Kiddo.Web.Security;
 
 using Kiddo.Web.Configuration;
 using Microsoft.AspNetCore.Mvc;

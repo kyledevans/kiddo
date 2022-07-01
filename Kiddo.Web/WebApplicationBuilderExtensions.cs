@@ -1,7 +1,6 @@
 ﻿namespace Kiddo.Web;
 
 using Kiddo.Web.Security;
-using Kiddo.Web.Security.Selector;
 
 public static class WebApplicationBuilderExtensions
 {

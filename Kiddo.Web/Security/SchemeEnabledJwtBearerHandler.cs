@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
 using Kiddo.Web.Configuration;
 
-namespace Kiddo.Web.Security.Selector;
+namespace Kiddo.Web.Security;
 
 /// <summary>
 /// Inherits from the ASP built in type <seealso cref="JwtBearerHandler"/>.  This simply enforces whether password authentication is enabled in appsettings.json and then defers to the base type for actual processing.
@@ -38,9 +38,7 @@ public class SchemeEnabledJwtBearerHandler : JwtBearerHandler
         }
 
         if (authMethod == null)
-        {
             throw new Exception($"Cannot authenticate against a null scheme.");
-        }
         else if (spaOptions.AuthMethods.Contains((WebContract.AuthenticationMethodType)authMethod))
         {
             result = await base.HandleAuthenticateAsync().ConfigureAwait(false);
