@@ -44,7 +44,7 @@ public static class WebApplicationBuilderExtensions
     /// <returns></returns>
     public static IApplicationBuilder UseEmailRequiredMiddleware(this IApplicationBuilder app)
     {
-        app.UseMiddleware<EmailRequiredMiddleware>();
+        app.UseMiddleware<EmailConfirmationRequiredMiddleware>();
         return app;
     }
 }

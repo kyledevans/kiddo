@@ -4,11 +4,11 @@ using Kiddo.Web.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-public class EmailRequiredMiddleware
+public class EmailConfirmationRequiredMiddleware
 {
     private RequestDelegate Next { get; set; }
 
-    public EmailRequiredMiddleware(RequestDelegate next)
+    public EmailConfirmationRequiredMiddleware(RequestDelegate next)
     {
         Next = next;
     }
@@ -22,7 +22,7 @@ public class EmailRequiredMiddleware
             return;
         }
 
-        IReadOnlyList<EmailRequiredAttribute>? emailRequiredAttrs = context.GetEndpoint()?.Metadata.GetOrderedMetadata<EmailRequiredAttribute>();
+        IReadOnlyList<EmailConfirmationRequiredAttribute>? emailRequiredAttrs = context.GetEndpoint()?.Metadata.GetOrderedMetadata<EmailConfirmationRequiredAttribute>();
 
         if (emailRequiredAttrs == null || emailRequiredAttrs.Count == 0)
         {

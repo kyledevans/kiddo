@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
-[Security.EmailRequired]
+[Security.EmailConfirmationRequired]
 public class AccountController : ControllerBase
 {
     private Models.AccountModel AccountModel { get; set; }

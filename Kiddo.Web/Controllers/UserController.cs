@@ -7,7 +7,7 @@ using Microsoft.Identity.Web.Resource;
 
 [ApiController]
 [Route("api/[controller]")]
-[Security.EmailRequired]
+[Security.EmailConfirmationRequired]
 public class UserController : ControllerBase
 {
     private Models.UserModel UserModel { get; set; }

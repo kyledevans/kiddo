@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
-[Security.EmailRequired]
+[Security.EmailConfirmationRequired]
 public class EntryController : ControllerBase
 {
     private Models.EntryModel EntryModel { get; set; }

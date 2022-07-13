@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
-[Security.EmailRequired]
+[Security.EmailConfirmationRequired]
 public class LookupTypeController : ControllerBase
 {
     private Models.LookupTypeModel LookupTypeModel { get; set; }

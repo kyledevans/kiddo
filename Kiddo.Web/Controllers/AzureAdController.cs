@@ -52,7 +52,7 @@ public class AzureAdController : ControllerBase
     [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     [HttpPost("LinkToExisting")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
-    [Security.EmailRequired]
+    [Security.EmailConfirmationRequired]
     public async Task<ActionResult<RegisterResponse>> LinkToExisting(LinkToExistingRequest linkRequest)
     {
         RegisterResponse response = await AzureAdModel.Register(null, linkRequest.AccessToken).ConfigureAwait(false);
@@ -62,7 +62,7 @@ public class AzureAdController : ControllerBase
     [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
     [HttpPost("RemoveLink")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.AzureAd)]
-    [Security.EmailRequired]
+    [Security.EmailConfirmationRequired]
     public async Task<ActionResult> RemoveLink(RemoveLinkRequest removeRequest)
     {
         await AzureAdModel.RemoveLink(removeRequest.ProviderKey).ConfigureAwait(false);

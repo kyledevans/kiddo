@@ -22,7 +22,7 @@ public class AzureAdModel
     private IManualGraphServiceClient ManualGraphClient { get; set; }
     private Validators Validators { get; set; }
 
-    public AzureAdModel(Validators validators, ILogger<ProfileModel> logger, IMapper mapper, UserManager<Database.Models.User> userManager, GraphServiceClient graphClient, DAL.KiddoDAL db, DAL.UserDAL userDB, ICurrentUserProvider currentUser, IUserRegistrationBehavior registrationBehavior, IManualGraphServiceClient manualGraphClient)
+    public AzureAdModel(IServiceProvider services, Validators validators, ILogger<ProfileModel> logger, IMapper mapper, UserManager<Database.Models.User> userManager, GraphServiceClient graphClient, DAL.KiddoDAL db, DAL.UserDAL userDB, ICurrentUserProvider currentUser, IUserRegistrationBehavior registrationBehavior, IManualGraphServiceClient manualGraphClient)
     {
         Logger = logger;
         DB = db;

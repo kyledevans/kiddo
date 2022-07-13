@@ -67,7 +67,7 @@ public class IdentityController : ControllerBase
     [HttpPost("ChangePassword")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.Password)]
     [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
-    [Security.EmailRequired]
+    [Security.EmailConfirmationRequired]
     public async Task<ActionResult> ChangePassword(WebContract.Identity.ChangePasswordRequest changeRequest)
     {
         bool response = await Model.ChangePassword(changeRequest.CurrentPassword, changeRequest.NewPassword).ConfigureAwait(false);
@@ -78,7 +78,7 @@ public class IdentityController : ControllerBase
     [HttpPost("RemovePassword")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.Password)]
     [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
-    [Security.EmailRequired]
+    [Security.EmailConfirmationRequired]
     public async Task<ActionResult> RemovePassword()
     {
         bool response = await Model.RemovePassword().ConfigureAwait(false);
@@ -89,7 +89,7 @@ public class IdentityController : ControllerBase
     [HttpPost("RemovePasswordByUserId")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.Password)]
     [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
-    [Security.EmailRequired]
+    [Security.EmailConfirmationRequired]
     public async Task<ActionResult> RemovePasswordByUserId(Guid userId)
     {
         bool response = await Model.RemovePasswordByUserId(userId).ConfigureAwait(false);
@@ -100,7 +100,7 @@ public class IdentityController : ControllerBase
     [HttpPost("SetPassword")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.Password)]
     [Authorize(Policy = Security.SecurityConstants.Policy.ReadOnlyUser)]
-    [Security.EmailRequired]
+    [Security.EmailConfirmationRequired]
     public async Task<ActionResult> SetPassword(WebContract.Identity.SetPasswordRequest setRequest)
     {
         bool response = await Model.SetPassword(setRequest.NewPassword).ConfigureAwait(false);
@@ -111,7 +111,7 @@ public class IdentityController : ControllerBase
     [HttpPost("SetPasswordByUserId")]
     [Security.AuthenticationMethodEnabled(WebContract.AuthenticationMethodType.Password)]
     [Authorize(Policy = Security.SecurityConstants.Policy.SuperAdministrator)]
-    [Security.EmailRequired]
+    [Security.EmailConfirmationRequired]
     public async Task<ActionResult> SetPasswordByUserId(Guid userId, WebContract.Identity.SetPasswordRequest setRequest)
     {
         bool response = await Model.SetPasswordByUserId(userId, setRequest.NewPassword).ConfigureAwait(false);
