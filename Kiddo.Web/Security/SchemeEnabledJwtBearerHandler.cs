@@ -60,7 +60,7 @@ public class SchemeEnabledJwtBearerHandler : JwtBearerHandler
             ProblemDetails details = new() {
                 Type = WebContract.ProblemDetailTypes.AuthenticationMethodNotEnabled
             };
-            await Response.WriteAsJsonAsync(details, null, "application/problem+json").ConfigureAwait(false);
+            await Response.WriteAsJsonAsync(details).ConfigureAwait(false);
             await Response.CompleteAsync().ConfigureAwait(false);
             return Task.CompletedTask;
         }
