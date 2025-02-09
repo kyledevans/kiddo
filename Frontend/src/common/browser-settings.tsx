@@ -1,4 +1,4 @@
-import { useState, FunctionComponent, useEffect, createContext, Dispatch, useContext, useCallback } from "react";
+import { useState, FunctionComponent, useEffect, createContext, Dispatch, useContext, useCallback, ReactNode } from "react";
 
 import { AuthenticationMethodType } from "./authentication";
 import { isNonEmptyString } from "./helper-functions";
@@ -6,15 +6,17 @@ import { isNonEmptyString } from "./helper-functions";
 export interface BrowserSettingsContext {
   settings: BrowserSettings | null;
   setSettings: Dispatch<BrowserSettings | null>;
-};
+}
 
 export interface BrowserSettings {
   defaultAuthMethod: AuthenticationMethodType | null;
-};
+}
 
 const BrowserSettingsToken = createContext<BrowserSettingsContext>({
   settings: null,
-  setSettings: () => { throw new Error("BrowserSettingsContext has not yet been initialized."); }
+  setSettings: () => {
+    throw new Error("BrowserSettingsContext has not yet been initialized.");
+  },
 });
 
 function validateBrowserSettings(val: any | null | undefined): val is BrowserSettings {
@@ -30,18 +32,21 @@ function validateBrowserSettings(val: any | null | undefined): val is BrowserSet
   return true;
 }
 
-export const AppBrowserSettingsContextProvider: FunctionComponent = ({ children }) => {
+export const AppBrowserSettingsContextProvider: FunctionComponent<{ children?: ReactNode }> = ({ children }) => {
   const [settings, setSettingsInner] = useState<BrowserSettings | null>(null);
 
-  const setSettings: Dispatch<BrowserSettings | null> = useCallback((newSettings) => {
-    if (newSettings == null) {
-      localStorage.removeItem("browserSettings");
-    } else {
-      localStorage.setItem("browserSettings", JSON.stringify(newSettings));
-    }
+  const setSettings: Dispatch<BrowserSettings | null> = useCallback(
+    (newSettings) => {
+      if (newSettings == null) {
+        localStorage.removeItem("browserSettings");
+      } else {
+        localStorage.setItem("browserSettings", JSON.stringify(newSettings));
+      }
 
-    setSettingsInner(newSettings);
-  }, [setSettingsInner]);
+      setSettingsInner(newSettings);
+    },
+    [setSettingsInner],
+  );
 
   const onStorageChange = useCallback(() => {
     const values = localStorage.getItem("browserSettings");
@@ -50,7 +55,7 @@ export const AppBrowserSettingsContextProvider: FunctionComponent = ({ children 
       if (validateBrowserSettings(newSettings)) {
         setSettings(newSettings);
       } else {
-        setSettings(null);  // TODO: Might want to do some kind of error logging or throw an exception here.
+        setSettings(null); // TODO: Might want to do some kind of error logging or throw an exception here.
       }
     } else {
       setSettings(null);
@@ -72,7 +77,7 @@ export const AppBrowserSettingsContextProvider: FunctionComponent = ({ children 
       if (validateBrowserSettings(newSettings)) {
         setSettings(newSettings);
       } else {
-        setSettings(null);  // TODO: Might want to do some kind of error logging or throw an exception here.
+        setSettings(null); // TODO: Might want to do some kind of error logging or throw an exception here.
       }
     } else {
       setSettings(null);
@@ -81,17 +86,15 @@ export const AppBrowserSettingsContextProvider: FunctionComponent = ({ children 
 
   const newContext: BrowserSettingsContext = {
     settings: settings,
-    setSettings: setSettings
+    setSettings: setSettings,
   };
 
   return (
     <>
-      <BrowserSettingsToken.Provider value={newContext}>
-        {children}
-      </BrowserSettingsToken.Provider>
+      <BrowserSettingsToken.Provider value={newContext}>{children}</BrowserSettingsToken.Provider>
     </>
   );
-}
+};
 
 export function useBrowserSettings(): [settings: BrowserSettings | null, setSettings: Dispatch<BrowserSettings | null>] {
   const context = useContext(BrowserSettingsToken);

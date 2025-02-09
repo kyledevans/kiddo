@@ -1,4 +1,4 @@
-import { createContext, useState, FunctionComponent, useEffect, useContext, ComponentType } from "react";
+import { createContext, useState, FunctionComponent, useEffect, useContext, ComponentType, ReactNode } from "react";
 import { MsalProvider } from "@azure/msal-react";
 import { IPublicClientApplication } from "@azure/msal-browser";
 
@@ -14,7 +14,7 @@ const CurrentAuthenticationManagerStateToken = createContext<AuthenticationManag
 const CurrentAuthenticationMethodToken = createContext<CurrentAuthenticationMethodType | null>(null);
 const AccessTokenReadyToken = createContext<boolean>(false);
 
-export const AppAuthenticationManagerContextProvider: FunctionComponent = ({ children }) => {
+export const AppAuthenticationManagerContextProvider: FunctionComponent<{ children?: ReactNode }> = ({ children }) => {
   const [authManager, setAuthManager] = useState<IAuthenticationManager | null>(null);
   const [authManagerState, setAuthManagerState] = useState<AuthenticationManagerStateType | null>(null);
   const [authMethod, setAuthMethod] = useState<CurrentAuthenticationMethodType | null>(null);
@@ -29,7 +29,7 @@ export const AppAuthenticationManagerContextProvider: FunctionComponent = ({ chi
       newAuthManager.configureFramework({
         setState: setAuthManagerState,
         setPca: setPca,
-        setAccessTokenReady: setAccessTokenReady
+        setAccessTokenReady: setAccessTokenReady,
       });
       newAuthManager.startAuthentication();
       setAuthManager(newAuthManager);
@@ -45,18 +45,27 @@ export const AppAuthenticationManagerContextProvider: FunctionComponent = ({ chi
     else throw new Error("Unable to determine current authentication method.");
   }, [authManager, authManagerState, setAuthMethod]);
 
-  return (<>
-    <CurrentAuthenticationManagerToken.Provider value={authManager}>
-      <CurrentAuthenticationManagerStateToken.Provider value={authManagerState}>
-        <AccessTokenReadyToken.Provider value={isAccessTokenReady}>
-          <CurrentAuthenticationMethodToken.Provider value={authMethod}>
-            {pca == null ? (<>{children}</>) : (<><MsalProvider instance={pca}>{children}</MsalProvider></>)}{/* The MsalProvider needs to encapsulate all logic that deals with authentication. */}
-          </CurrentAuthenticationMethodToken.Provider>
-        </AccessTokenReadyToken.Provider>
-      </CurrentAuthenticationManagerStateToken.Provider>
-    </CurrentAuthenticationManagerToken.Provider>
-  </>);
-}
+  return (
+    <>
+      <CurrentAuthenticationManagerToken.Provider value={authManager}>
+        <CurrentAuthenticationManagerStateToken.Provider value={authManagerState}>
+          <AccessTokenReadyToken.Provider value={isAccessTokenReady}>
+            <CurrentAuthenticationMethodToken.Provider value={authMethod}>
+              {pca == null ? (
+                <>{children}</>
+              ) : (
+                <>
+                  <MsalProvider instance={pca}>{children}</MsalProvider>
+                </>
+              )}
+              {/* The MsalProvider needs to encapsulate all logic that deals with authentication. */}
+            </CurrentAuthenticationMethodToken.Provider>
+          </AccessTokenReadyToken.Provider>
+        </CurrentAuthenticationManagerStateToken.Provider>
+      </CurrentAuthenticationManagerToken.Provider>
+    </>
+  );
+};
 
 export function useAuthenticationManager(): IAuthenticationManager | null {
   const context = useContext(CurrentAuthenticationManagerToken);
@@ -82,8 +91,8 @@ export function withRequiredAccessToken<T>(RestrictedComponent: ComponentType<T>
   const NewComponent = (props: T) => {
     const isAccessTokenReady = useIsAccessTokenReady();
 
-    if (isAccessTokenReady) return (<></>);
-    else return (<RestrictedComponent {...props} />);
+    if (isAccessTokenReady) return <></>;
+    else return <RestrictedComponent {...props} />;
   };
 
   return NewComponent;

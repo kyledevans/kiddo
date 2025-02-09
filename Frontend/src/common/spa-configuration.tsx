@@ -1,11 +1,11 @@
-import { createContext, FunctionComponent, useContext, useEffect, useState } from "react";
+import { createContext, FunctionComponent, ReactNode, useContext, useEffect, useState } from "react";
 
 import { Api } from "../api/api";
 import { SpaConfiguration } from "../api/app";
 
 const SpaConfigurationToken = createContext<SpaConfiguration | null>(null);
 
-export const AppSpaConfigurationProvider: FunctionComponent = (props) => {
+export const AppSpaConfigurationProvider: FunctionComponent<{ children?: ReactNode }> = (props) => {
   const [config, setConfig] = useState<SpaConfiguration | null>(null);
 
   useEffect(() => {
@@ -17,12 +17,10 @@ export const AppSpaConfigurationProvider: FunctionComponent = (props) => {
 
   return (
     <>
-      <SpaConfigurationToken.Provider value={config}>
-        {props.children}
-      </SpaConfigurationToken.Provider>
+      <SpaConfigurationToken.Provider value={config}>{props.children}</SpaConfigurationToken.Provider>
     </>
   );
-}
+};
 
 export function useSpaConfiguration(): SpaConfiguration | null {
   const config = useContext(SpaConfigurationToken);

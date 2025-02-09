@@ -17,7 +17,7 @@ import { Toolbar, ToolbarColumn3 } from "../common/toolbar";
 import { withRequiredEmailConfirmation } from "../common/current-profile";
 
 /** Index to temp Id and permanent Id mapping.  Key: Index. */
-type IndexTempIdMap = Map<number, { permanentId: number, tempId: number }>;
+type IndexTempIdMap = Map<number, { permanentId: number; tempId: number }>;
 
 /** Data structure for the values stored in the react-hook-form internal state. */
 type PageFormType = { lookups: Lookup[] };
@@ -26,17 +26,17 @@ const pageStyles = mergeStyleSets({
   page: {
     display: "grid",
     gridTemplateColumns: "1fr",
-    gridAutoRows: "min-content"
+    gridAutoRows: "min-content",
   },
   btnAdd: {
-    marginRight: 50
+    marginRight: 50,
   },
   btnSave: {
-    paddingRight: 16
+    paddingRight: 16,
   },
   editForm: {
     display: "grid",
-    gridAutoRows: "min-content"
+    gridAutoRows: "min-content",
   },
   row: {
     display: "grid",
@@ -46,9 +46,9 @@ const pageStyles = mergeStyleSets({
     backgroundColor: "#fff",
     selectors: {
       "&.dnd-placeholder": {
-        opacity: 0
-      }
-    }
+        opacity: 0,
+      },
+    },
   },
   header: [
     AppTheme.fonts.medium,
@@ -56,26 +56,26 @@ const pageStyles = mergeStyleSets({
     { borderBottomColor: AppTheme.palette.neutralLight },
     { fontWeight: 600 },
     { lineHeight: 42 },
-    { cursor: "default" }
+    { cursor: "default" },
   ],
   cell: {
     display: "grid",
-    alignItems: "center"
+    alignItems: "center",
   },
   hamburger: {
     selectors: {
       "&.ms-DetailsRow-cell": {
         padding: "0",
         display: "grid",
-        alignItems: "center"
-      }
-    }
+        alignItems: "center",
+      },
+    },
   },
   sortIcon: {
     cursor: "move",
     fontSize: 32,
-    color: "#666"
-  }
+    color: "#666",
+  },
 });
 
 const icons = {
@@ -83,7 +83,7 @@ const icons = {
   hamburger: { iconName: "MoreVertical" },
   sort: { iconName: "GripperDotsVertical" },
   add: { iconName: "Add" },
-  delete: { iconName: "Delete" }
+  delete: { iconName: "Delete" },
 };
 
 const menuIconProps: IIconProps = { hidden: true };
@@ -96,7 +96,9 @@ async function initialize(lookupTypeId: number, setType: (newType: LookupType) =
 }
 
 function useRowContextMenu(index: number, removeLookup: (index: number) => void) {
-  const onDeleteMenuItemClick = useCallback(() => { removeLookup(index); }, [removeLookup, index]);
+  const onDeleteMenuItemClick = useCallback(() => {
+    removeLookup(index);
+  }, [removeLookup, index]);
 
   const [menuProps, setMenuProps] = useState<IContextualMenuProps>({
     items: [
@@ -104,10 +106,10 @@ function useRowContextMenu(index: number, removeLookup: (index: number) => void)
         key: "delete",
         text: "Delete",
         iconProps: icons.delete,
-        onClick: onDeleteMenuItemClick
-      }
+        onClick: onDeleteMenuItemClick,
+      },
     ],
-    directionalHintFixed: true
+    directionalHintFixed: true,
   });
 
   useEffect(() => {
@@ -117,10 +119,10 @@ function useRowContextMenu(index: number, removeLookup: (index: number) => void)
           key: "delete",
           text: "Delete",
           iconProps: icons.delete,
-          onClick: onDeleteMenuItemClick
-        }
+          onClick: onDeleteMenuItemClick,
+        },
       ],
-      directionalHintFixed: true
+      directionalHintFixed: true,
     });
   }, [setMenuProps, onDeleteMenuItemClick]);
 
@@ -142,25 +144,72 @@ const ValuesList: FunctionComponent<{ lookupTypeId: number }> = ({ lookupTypeId 
         <div>Description</div>
         <div>Order</div>
       </div>
-      {values.lookups.map((l, i) => (<ValueItem key={l.lookupId} lookupTypeId={lookupTypeId} lookup={l} index={i} removeLookup={remove} moveLookup={move} />))}
+      {values.lookups.map((l, i) => (
+        <ValueItem key={l.lookupId} lookupTypeId={lookupTypeId} lookup={l} index={i} removeLookup={remove} moveLookup={move} />
+      ))}
     </div>
   );
-}
+};
 
-const ValueItem: FunctionComponent<{ lookupTypeId: number, lookup: Lookup, index: number, removeLookup: (index: number) => void, moveLookup: (dragIndex: number, hoverIndex: number) => void }> = ({ lookupTypeId, lookup, index, removeLookup, moveLookup }) => {
+const ValueItem: FunctionComponent<{
+  lookupTypeId: number;
+  lookup: Lookup;
+  index: number;
+  removeLookup: (index: number) => void;
+  moveLookup: (dragIndex: number, hoverIndex: number) => void;
+}> = ({ lookupTypeId, lookup, index, removeLookup, moveLookup }) => {
   const menuProps = useRowContextMenu(index, removeLookup);
   const dnd = useDndSortOrder(`lookup_type_${lookupTypeId}`, lookup.lookupId, index, moveLookup);
 
   return (
     <div className={`${pageStyles.row} ${dnd.isDragging ? "dnd-placeholder" : ""}`} ref={dnd.previewRef} data-handler-id={dnd.handlerId}>
-      <div className={pageStyles.cell}><IconButton iconProps={icons.hamburger} menuProps={menuProps} menuIconProps={menuIconProps} tabIndex={-1} /></div>
-      <div className={pageStyles.cell}><Controller name={`lookups.${index}.name`} rules={{ required: true }} render={({ field, fieldState }) => <TextField underlined {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} /></div>
-      <div className={pageStyles.cell}><Controller name={`lookups.${index}.nameShort`} rules={{ required: true }} render={({ field, fieldState }) => <TextField underlined {...field} value={field.value == null ? "" : field.value} maxLength={4000} errorMessage={fieldState?.error?.type === "required" ? "Required." : ""} />} /></div>
-      <div className={pageStyles.cell}><Controller name={`lookups.${index}.description`} render={({ field }) => <TextField underlined {...field} value={field.value == null ? "" : field.value} maxLength={4000} />} /></div>
-      <div className={pageStyles.cell}><div ref={dnd.dragRef}><Icon iconName="GripperDotsVertical" className={pageStyles.sortIcon} /></div></div>
+      <div className={pageStyles.cell}>
+        <IconButton iconProps={icons.hamburger} menuProps={menuProps} menuIconProps={menuIconProps} tabIndex={-1} />
+      </div>
+      <div className={pageStyles.cell}>
+        <Controller
+          name={`lookups.${index}.name`}
+          rules={{ required: true }}
+          render={({ field, fieldState }) => (
+            <TextField
+              underlined
+              {...field}
+              value={field.value == null ? "" : field.value}
+              maxLength={4000}
+              errorMessage={fieldState?.error?.type === "required" ? "Required." : ""}
+            />
+          )}
+        />
+      </div>
+      <div className={pageStyles.cell}>
+        <Controller
+          name={`lookups.${index}.nameShort`}
+          rules={{ required: true }}
+          render={({ field, fieldState }) => (
+            <TextField
+              underlined
+              {...field}
+              value={field.value == null ? "" : field.value}
+              maxLength={4000}
+              errorMessage={fieldState?.error?.type === "required" ? "Required." : ""}
+            />
+          )}
+        />
+      </div>
+      <div className={pageStyles.cell}>
+        <Controller
+          name={`lookups.${index}.description`}
+          render={({ field }) => <TextField underlined {...field} value={field.value == null ? "" : field.value} maxLength={4000} />}
+        />
+      </div>
+      <div className={pageStyles.cell}>
+        <div ref={dnd.dragRef}>
+          <Icon iconName="GripperDotsVertical" className={pageStyles.sortIcon} />
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 const LookupsPageInner: FunctionComponent<{ lookupTypeId: LookupTypeType }> = ({ lookupTypeId }) => {
   const [type, setType] = useState<LookupType | null>(null);
@@ -173,55 +222,65 @@ const LookupsPageInner: FunctionComponent<{ lookupTypeId: LookupTypeType }> = ({
   const saveErrorDlg = useRef<ErrorCalloutControl | null>(null);
   const snackbar = useSnackbar();
 
-  useEffect(() => { initialize(lookupTypeId, setType, reset); }, [lookupTypeId, setType, reset]);
+  useEffect(() => {
+    initialize(lookupTypeId, setType, reset);
+  }, [lookupTypeId, setType, reset]);
 
-  useEffect(() => { setAppTitle(type == null ? AppName : type.name); }, [setAppTitle, type, type?.name]);
+  useEffect(() => {
+    setAppTitle(type == null ? AppName : type.name);
+  }, [setAppTitle, type, type?.name]);
 
   const onAddClick = useCallback(() => {
     append({ lookupId: nextTempId, name: "", nameShort: "", description: null, isActive: true, sortOrder: 0 });
     setNextTempId(nextTempId - 1);
   }, [nextTempId, setNextTempId, append]);
 
-  const onSubmitValid: SubmitHandler<PageFormType> = useCallback(async ({ lookups }) => {
-    if (type == null) throw new Error("type cannot be null or undefined.");
+  const onSubmitValid: SubmitHandler<PageFormType> = useCallback(
+    async ({ lookups }) => {
+      if (type == null) throw new Error("type cannot be null or undefined.");
 
-    // Store a mapping between the current index for each lookup value and their lookupIds.  This allows us
-    // to re-assign the tempIds that are generated on the client with the real lookupIds that are returned
-    // from the server.
-    const lookupIdMaps: IndexTempIdMap = new Map();
-    lookups.forEach((l, i) => {
-      if (l.lookupId <= 0) lookupIdMaps.set(i, { permanentId: 0, tempId: l.lookupId });
-    });
+      // Store a mapping between the current index for each lookup value and their lookupIds.  This allows us
+      // to re-assign the tempIds that are generated on the client with the real lookupIds that are returned
+      // from the server.
+      const lookupIdMaps: IndexTempIdMap = new Map();
+      lookups.forEach((l, i) => {
+        if (l.lookupId <= 0) lookupIdMaps.set(i, { permanentId: 0, tempId: l.lookupId });
+      });
 
-    const saved = await Api.lookupType.updateLookupType({ ...type, lookups: lookups });
+      const saved = await Api.lookupType.updateLookupType({ ...type, lookups: lookups });
 
-    // Determine how to map any newly created lookups from their tempId to their actual permanent lookupId.
-    saved.lookups.forEach((l, i) => {
-      const lookupIdMap = lookupIdMaps.get(i);
-      if (lookupIdMap != null) {
-        lookupIdMap.permanentId = l.lookupId;
-      }
-    });
+      // Determine how to map any newly created lookups from their tempId to their actual permanent lookupId.
+      saved.lookups.forEach((l, i) => {
+        const lookupIdMap = lookupIdMaps.get(i);
+        if (lookupIdMap != null) {
+          lookupIdMap.permanentId = l.lookupId;
+        }
+      });
 
-    // Overwrite any tempIds that have been replaced by permanent LookupIds.
-    const currentLookups = getValues("lookups");
-    lookupIdMaps.forEach((lookupIdMap) => {
-      const currentLookupIndex = currentLookups.findIndex(l => lookupIdMap.tempId === l.lookupId);
-      if (currentLookupIndex != null && currentLookups[currentLookupIndex].lookupId !== lookupIdMap.permanentId) {
-        currentLookups[currentLookupIndex].lookupId = lookupIdMap.permanentId;
-      }
-    });
+      // Overwrite any tempIds that have been replaced by permanent LookupIds.
+      const currentLookups = getValues("lookups");
+      lookupIdMaps.forEach((lookupIdMap) => {
+        const currentLookupIndex = currentLookups.findIndex((l) => lookupIdMap.tempId === l.lookupId);
+        if (currentLookupIndex != null && currentLookups[currentLookupIndex].lookupId !== lookupIdMap.permanentId) {
+          currentLookups[currentLookupIndex].lookupId = lookupIdMap.permanentId;
+        }
+      });
 
-    setType(saved);
-    reset({ lookups: currentLookups });
-    snackbar.open(`Saved.`);
-  }, [type, getValues, reset, snackbar]);
+      setType(saved);
+      reset({ lookups: currentLookups });
+      snackbar.open(`Saved.`);
+    },
+    [type, getValues, reset, snackbar],
+  );
 
-  const onSubmitInvalid: SubmitErrorHandler<PageFormType> = useCallback((errors, _ev) => {
-    if (type == null) throw new Error("type cannot be null or undefined.");
+  const onSubmitInvalid: SubmitErrorHandler<PageFormType> = useCallback(
+    (errors, _ev) => {
+      if (type == null) throw new Error("type cannot be null or undefined.");
 
-    saveErrorDlg.current?.open(5000);
-  }, [type]);
+      saveErrorDlg.current?.open(5000);
+    },
+    [type],
+  );
 
   const onSubmit = useReactHookFormSubmitHandlers(onSubmitValid, onSubmitInvalid);
 
@@ -231,7 +290,9 @@ const LookupsPageInner: FunctionComponent<{ lookupTypeId: LookupTypeType }> = ({
         <ToolbarColumn3>
           <CommandBarButton className={pageStyles.btnAdd} text="Add" onClick={onAddClick} iconProps={icons.add} tabIndex={-1} />
           <CommandBarButton className={pageStyles.btnSave} id="btnSave" text="Save" type="submit" disabled={!isDirty} iconProps={icons.save} tabIndex={-1} />
-          <ErrorCallout target="#btnSave" control={saveErrorDlg}><Text variant="small">Error: Unable to save.</Text></ErrorCallout>
+          <ErrorCallout target="#btnSave" control={saveErrorDlg}>
+            <Text variant="small">Error: Unable to save.</Text>
+          </ErrorCallout>
         </ToolbarColumn3>
       </Toolbar>
       <div>
@@ -239,16 +300,14 @@ const LookupsPageInner: FunctionComponent<{ lookupTypeId: LookupTypeType }> = ({
         <div className="toolbar-middle"></div>
         <div className="toolbar-right"></div>
       </div>
-      <div className={pageStyles.editForm}>
-        {type != null && (<ValuesList lookupTypeId={type.lookupTypeId} />)}
-      </div>
+      <div className={pageStyles.editForm}>{type != null && <ValuesList lookupTypeId={type.lookupTypeId} />}</div>
     </form>
   );
-}
+};
 
 const LookupsPageDeps: FunctionComponent<{ lookupTypeId: LookupTypeType }> = ({ lookupTypeId }) => {
   const formMethods = useForm<PageFormType>({
-    defaultValues: { lookups: [] }
+    defaultValues: { lookups: [] },
   });
 
   return (

@@ -18,7 +18,5 @@ export default function DefaultPage() {
     }
   }, [navigate, me]);
 
-  return (
-    <div></div>
-  );
+  return <div></div>;
 }

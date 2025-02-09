@@ -1,4 +1,4 @@
-import { createContext, useState, Dispatch, SetStateAction, FunctionComponent, useEffect, useContext, ComponentType, useMemo } from "react";
+import { createContext, useState, Dispatch, SetStateAction, FunctionComponent, useEffect, useContext, ComponentType, useMemo, ReactNode } from "react";
 import { Text, mergeStyleSets } from "@fluentui/react";
 
 import { Api } from "../api/api";
@@ -11,11 +11,11 @@ const pageStyles = mergeStyleSets({
     gridTemplateColumns: "1fr",
     gridTemplateRows: "min-content 1fr",
     overflow: "hidden",
-    justifyItems: "center"
+    justifyItems: "center",
   },
   header: {
-    margin: "50px 0 50px 0"
-  }
+    margin: "50px 0 50px 0",
+  },
 });
 
 export enum PolicyType {
@@ -24,12 +24,17 @@ export enum PolicyType {
   SuperAdministrator = "SuperAdministrator",
   Administrator = "Administrator",
   User = "User",
-  ReadOnlyUser = "ReadOnlyUser"
+  ReadOnlyUser = "ReadOnlyUser",
 }
 
-const CurrentAuthorizationContextToken = createContext<CurrentPoliciesContextType>([null, () => { throw new Error("AppCurrentAuthorizationContextProvider has not been initialized.") }]);
+const CurrentAuthorizationContextToken = createContext<CurrentPoliciesContextType>([
+  null,
+  () => {
+    throw new Error("AppCurrentAuthorizationContextProvider has not been initialized.");
+  },
+]);
 
-export const AppCurrentAuthorizationContextProvider: FunctionComponent = ({ children }) => {
+export const AppCurrentAuthorizationContextProvider: FunctionComponent<{ children?: ReactNode }> = ({ children }) => {
   const [policies, setPolicies] = useState<PolicySummary | null>(null);
   const isAccessTokenReady = useIsAccessTokenReady();
 
@@ -49,7 +54,7 @@ export const AppCurrentAuthorizationContextProvider: FunctionComponent = ({ chil
       <CurrentAuthorizationContextToken.Provider value={newContext}>{children}</CurrentAuthorizationContextToken.Provider>
     </>
   );
-}
+};
 
 export function useCurrentPolicies(): CurrentPoliciesContextType {
   const context = useContext(CurrentAuthorizationContextToken);
@@ -73,15 +78,17 @@ export function withRequiredPolicy<T>(RestrictedComponent: ComponentType<T>, pol
 
     if (isSatisfied == null) {
       // Don't render anything if we are still waiting for the policy information to load.
-      return (<></>);
+      return <></>;
     } else if (isSatisfied) {
-      return (<RestrictedComponent {...props} />);
+      return <RestrictedComponent {...props} />;
     } else if (showErrorMessage === false) {
-      return (<></>);
+      return <></>;
     } else {
       return (
         <div className={pageStyles.page}>
-          <Text className={pageStyles.header} block variant="xxLargePlus">Restricted</Text>
+          <Text className={pageStyles.header} block variant="xxLargePlus">
+            Restricted
+          </Text>
         </div>
       );
     }

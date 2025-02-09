@@ -1,6 +1,6 @@
 /** @file Application title service.  Provides functionality to update the title in the DOM and in the browser window. */
 
-import { createContext, useState, FunctionComponent, useEffect, useContext } from "react";
+import { createContext, useState, FunctionComponent, useEffect, useContext, ReactNode } from "react";
 
 import { isNonEmptyString } from "./helper-functions";
 import { AppName } from "./constants";
@@ -8,7 +8,9 @@ import { AppName } from "./constants";
 /** Provides access to the page title. */
 const TitleToken = createContext<TitleContext>({
   appTitle: AppName,
-  setAppTitle: () => { throw new Error("AppTitleContext has not yet been initialized."); }
+  setAppTitle: () => {
+    throw new Error("AppTitleContext has not yet been initialized.");
+  },
 });
 
 /**
@@ -31,7 +33,7 @@ export function useTitle(): [appTitle: string | null, setAppTitle: (newAppTitle:
 }
 
 /** Initializes the page title singleton.  This should only be used in 1 place in the app.  Typically at or near the top level component. */
-export const AppTitleContextProvider: FunctionComponent = (props) => {
+export const AppTitleContextProvider: FunctionComponent<{ children?: ReactNode }> = (props) => {
   const [appTitle, setAppTitle] = useState<string | null>(AppName);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export const AppTitleContextProvider: FunctionComponent = (props) => {
 
   const newContext: TitleContext = {
     appTitle,
-    setAppTitle
+    setAppTitle,
   };
 
   return (
@@ -52,7 +54,7 @@ export const AppTitleContextProvider: FunctionComponent = (props) => {
       <TitleToken.Provider value={newContext}>{props.children}</TitleToken.Provider>
     </>
   );
-}
+};
 
 export interface TitleContext {
   readonly appTitle: string | null;

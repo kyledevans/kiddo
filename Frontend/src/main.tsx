@@ -6,14 +6,15 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 
 import "./index.scss";
-import App from "./App";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
 
 initializeIcons();
 library.add(fas, fab);
 
 ReactDOM.render(
   <StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </StrictMode>,
-  document.getElementById("root")
+  document.getElementById("root"),
 );
