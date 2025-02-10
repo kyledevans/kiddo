@@ -48,7 +48,7 @@ public class EmailConfirmationRequiredMiddleware
                     ProblemDetails details = new() {
                         Type = WebContract.ProblemDetailTypes.EmailNotConfirmed
                     };
-                    await context.Response.WriteAsJsonAsync(details, null, "application/problem+json").ConfigureAwait(false);
+                    await context.Response.WriteAsJsonAsync(details).ConfigureAwait(false);
                     await context.Response.CompleteAsync().ConfigureAwait(false);
                     return;
                 }

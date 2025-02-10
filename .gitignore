@@ -8,4 +8,4 @@
 **/bin/*
 .vs/*
 logs/*
-Kiddo.Web/ClientApp/node_modules/*
+**/node_modules/*

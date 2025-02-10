@@ -32,7 +32,7 @@ public class AuthenticationMethodEnablementMiddleware : IMiddleware
                     ProblemDetails details = new() {
                         Type = WebContract.ProblemDetailTypes.AuthenticationMethodNotEnabled
                     };
-                    await context.Response.WriteAsJsonAsync(details, null, "application/problem+json").ConfigureAwait(false);
+                    await context.Response.WriteAsJsonAsync(details).ConfigureAwait(false);
                     await context.Response.CompleteAsync().ConfigureAwait(false);
                     return;
                 }
